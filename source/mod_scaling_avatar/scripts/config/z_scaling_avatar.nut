@@ -198,13 +198,13 @@ gt.Const.ScalingMasterMod.GetEnemyKills <- function(_actor) {
     }
 
     return {
-        HitpointsGained = hitpointsGained + ::ScalingAvatar.StatBonusInitial,
-        BraveryGained = braveryGained + ::ScalingAvatar.StatBonusInitial,
-        StaminaGained = staminaGained + ::ScalingAvatar.StatBonusInitial,
-        MeleeSkillGained = meleeSkillGained + ::ScalingAvatar.StatBonusInitial,
-        RangedSkillGained = rangedSkillGained + ::ScalingAvatar.StatBonusInitial,
-        MeleeDefenseGained = meleeDefenseGained + ::ScalingAvatar.StatBonusInitial,
-        RangedDefenseGained = rangedDefenseGained + ::ScalingAvatar.StatBonusInitial,
-        InitiativeGained = initiativeGained + ::ScalingAvatar.StatBonusInitial
+        HitpointsGained = hitpointsGained + ::ScalingAvatar.StatBonusFlat,
+        BraveryGained = braveryGained + ::ScalingAvatar.StatBonusFlat,
+        StaminaGained = staminaGained + ::ScalingAvatar.StatBonusFlat,
+        MeleeSkillGained = meleeSkillGained + ::ScalingAvatar.StatBonusFlat,
+        RangedSkillGained = rangedSkillGained + ::ScalingAvatar.StatBonusFlat,
+        MeleeDefenseGained = meleeDefenseGained + ::ScalingAvatar.StatBonusFlat,
+        RangedDefenseGained = rangedDefenseGained + ::ScalingAvatar.StatBonusFlat,
+        InitiativeGained = initiativeGained + ::ScalingAvatar.StatBonusFlat
     };
 };

@@ -25,6 +25,28 @@
         {
             _properties.MeleeDefense += 20;
         }
+
+
+
+    // CLEAN: mods_hookClass("skills/traits/player_character_trait").getTooltip()
+    // CLEAN: override 
+    setTotalStats
+        ::mods_hookClass("skills/traits/player_character_trait", function(o) {
+            while (!("getTooltip" in o)) o = o[o.SuperName];
+
+    while (!("onTargetKilled" in o)) o = o[o.SuperName];
+    local onTargetKilled = o.onTargetKilled;
+    o.onTargetKilled = function(_targetEntity, _skill) {
+        local actor = this.getContainer().getActor();
+        calculateScaling(actor, _targetEntity);
+        onTargetKilled(_targetEntity, _skill);
+    }
+
+    local getHitFactors = ::mods_getMember(o, "getHitFactors");
+    ::mods_override(o, "getHitFactors", function(_targetTile)
+    {
+        local ret = getHitFactors(_targetTile);
+
 */
 
 ::ScalingAvatarUtil <- {
@@ -92,74 +114,27 @@
         // actual scaling code
 
         ::mods_hookClass("skills/traits/player_character_trait", function(o) {
-            while (!("getTooltip" in o)) o = o[o.SuperName];
-            local getTooltip = o.getTooltip;
-            o.getTooltip = function() {
-                local ret = getTooltip();
-                if (this.getContainer() != null) {
-                    ret.extend(this.getAttributesTooltip());
-                }
-                return ret;
-            }
+            local getTooltip = ::mods_getMember(o, "getTooltip");
+            ::mods_override(o, "getTooltip", function(o) {
+                local results = getTooltip(o);
+                local actor = this.getContainer().getActor();
+                local stats = this.Const.ScalingMasterMod.GetEnemyKills(actor);
 
-            function getAttributesTooltip() {
-                local stats = this.getTotalStats();
-                local ret = [{
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/health.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.HitpointsGained + "[/color] Hitpoints gained due to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/bravery.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.BraveryGained + "[/color] Resolve due gained to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/fatigue.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.StaminaGained + "[/color] Fatigue gained due to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/initiative.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.InitiativeGained + "[/color] Initiative gained due to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/melee_skill.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.MeleeSkillGained + "[/color] Melee Skill gained due to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/ranged_skill.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.RangedSkillGained + "[/color] Ranged Skill gained due to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/melee_defense.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.MeleeDefenseGained + "[/color] Melee Defense gained due to scaling effect."
-                    },
-                    {
-                        id = 10,
-                        type = "text",
-                        icon = "ui/icons/ranged_defense.png",
-                        text = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + stats.RangedDefenseGained + "[/color] Ranged Defense gained due to scaling effect."
-                    }
-                ];
-                return ret;
-            }
+                local format_text = function(statName, statValue) {
+                    return "[color=" + this.Const.UI.Color.PositiveValue + "]+" + statValue + "[/color] " + statName + " gained due to scaling effect.";
+                };
 
-            function getTotalStats() {
-                return this.Const.ScalingMasterMod.GetEnemyKills(this.getContainer().getActor());
-            }
+                results.append({ id = 10, type = "text", icon = "ui/icons/health.png", text = format_text("Hitpoints", stats.HitpointsGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/bravery.png", text = format_text("Resolve", stats.BraveryGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/fatigue.png", text = format_text("Fatigue", stats.StaminaGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/initiative.png", text = format_text("Initiative", stats.InitiativeGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/melee_skill.png", text = format_text("Melee Skill", stats.MeleeSkillGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/ranged_skill.png", text = format_text("Ranged Skill", stats.RangedSkillGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/melee_defense.png", text = format_text("Melee Defense", stats.MeleeDefenseGained), });
+                results.append({ id = 10, type = "text", icon = "ui/icons/ranged_defense.png", text = format_text("Ranged Defense", stats.RangedDefenseGained), });
 
+                return results;
+            }
         });
 
         ::mods_hookClass("skills/traits/player_character_trait", function(o) {
