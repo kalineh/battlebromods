@@ -151,15 +151,15 @@
             local learned_something = false;
             local learned_string = "";
 
-            local scaling_roll_all = Math.rand(0, 100).tointeger();
-            local scaling_roll_hitpoints = Math.rand(0, 100).tointeger();
-            local scaling_roll_resolve = Math.rand(0, 100).tointeger();
-            local scaling_roll_fatigue = Math.rand(0, 100).tointeger();
-            local scaling_roll_melee_attack = Math.rand(0, 100).tointeger();
-            local scaling_roll_ranged_attack = Math.rand(0, 100).tointeger();
-            local scaling_roll_melee_defense = Math.rand(0, 100).tointeger();
-            local scaling_roll_ranged_defense = Math.rand(0, 100).tointeger();
-            local scaling_roll_initiative = Math.rand(0, 100).tointeger();
+            local scaling_roll_all = Math.rand(0, 100);
+            local scaling_roll_hitpoints = Math.rand(0, 100);
+            local scaling_roll_resolve = Math.rand(0, 100);
+            local scaling_roll_fatigue = Math.rand(0, 100);
+            local scaling_roll_melee_attack = Math.rand(0, 100);
+            local scaling_roll_ranged_attack = Math.rand(0, 100);
+            local scaling_roll_melee_defense = Math.rand(0, 100);
+            local scaling_roll_ranged_defense = Math.rand(0, 100);
+            local scaling_roll_initiative = Math.rand(0, 100);
 
             if (::ScalingAvatar.StatRollSeperate == false)
             {
@@ -227,7 +227,7 @@
         }
 
         function onTargetKilledPerks(_targetEntity, _skill) {
-            local scaling_roll_perk = Math.rand(0, 100).tointeger();
+            local scaling_roll_perk = Math.rand(0, 100);
             local success_roll_perk = scaling_roll_perk < ::ScalingAvatar.PerkRollPercent;
 
             ::ScalingAvatar.VerboseLogDebug("rolling for perk increase...");
