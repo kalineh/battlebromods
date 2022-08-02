@@ -101,7 +101,7 @@
         };
 
         writeTag = function(tagName, tagValue) {
-            this.getContainer().getActor().getLifetimeStats().Tags.set(tagName, tagValue);
+            this.getContainer().getActor().getLifetimeStats().Tags.add(tagName, tagValue);
         };
 
         readBonusStats = function() {
