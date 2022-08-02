@@ -256,7 +256,7 @@
             {
                 if (perk.getID() == v.ID) {
                     if (v.Script != "") {
-                        this.Tactical.EventLog.log(colorizeString(actor.getName(), "#3b3fe7") + " learned " + colorizeString(perk.getName(), "#3b3fe7") + " from his enemy!");
+                        this.Tactical.EventLog.log("[color=#3b3fe7]" + actor.getName() + "[/color] learned [color=#3b3fe7]" + perk.getName() + "[/color] from his enemy!");
                         actor.m.PerkPointsSpent++;
                         actor.getSkills().add(this.new(v.Script));
                         local rowToAddPerk = 0;
