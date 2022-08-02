@@ -80,7 +80,7 @@
         local settingStat = page.addRangeSetting("StatRollPercent", 1, 1, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
         local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 1, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
         local settingSeperate = page.addBooleanSetting("StatRollIndividual", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
-        local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additiona flat bonus to all stats.");
+        local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additional flat bonus to all stats.");
         local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
 
         settingStat.addCallback(function(_value) { ::ScalingAvatar.StatRollPercent = _value; });
