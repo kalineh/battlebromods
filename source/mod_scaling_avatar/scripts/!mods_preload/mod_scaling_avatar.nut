@@ -89,36 +89,25 @@
 
     ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
 
-        readTag = function(tagName) {
-            var r = this.getContainer().getActor().getLifetimeStats().Tags.get(tagName);
-            if (r && r > 0)
-                return r;
-            return 0;
+        readStatTag = function(tagName) {
+            return this.getContainer().getActor().getLifetimeStats().Tags.getAsInt(tagName);
         }
 
-        incrementTag = function(tagName) {
-            this.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
-        };
-
-        writeTag = function(tagName, tagValue) {
-            this.getContainer().getActor().getLifetimeStats().Tags.add(tagName, tagValue);
-        };
-
-        readBonusStats = function() {
+        readStatTags = function() {
             return {
-                readTag("HitpointsGained"),
-                readTag("BraveryGained"),
-                readTag("StaminaGained"),
-                readTag("MeleeSkillGained"),
-                readTag("RangedSkillGained"),
-                readTag("MeleeDefenseGained"),
-                readTag("RangedDefenseGained"),
-                readTag("InitiativeGained"),
+                HitpointsGained = readStatTag("HitpointsGained"),
+                BraveryGained = readStatTag("BraveryGained"),
+                StaminaGained = readStatTag("StaminaGained"),
+                MeleeSkillGained = readStatTag("MeleeSkillGained"),
+                RangedSkillGained = readStatTag("RangedSkillGained"),
+                MeleeDefenseGained = readStatTag("MeleeDefenseGained"),
+                RangedDefenseGained = readStatTag("RangedDefenseGained"),
+                InitiativeGained = readStatTag("InitiativeGained"),
             };
         };
 
-        writeBonusStats = function(s) {
-            // TODO: cleaner
+        incrementTag = function(tagName) {
+            this.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
         };
 
         local getTooltip = ::mods_getMember(o, "getTooltip");
@@ -126,7 +115,7 @@
             local results = getTooltip(o);
 
             local actor = this.getContainer().getActor();
-            local stats = this.Const.ScalingMasterMod.GetEnemyKills(actor);
+            local stats = readStatTags();
 
             local format_text = function(statName, statValue) {
                 return "[color=" + this.Const.UI.Color.PositiveValue + "]+" + statValue + "[/color] " + statName + " gained due to scaling effect.";
