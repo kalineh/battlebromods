@@ -123,7 +123,7 @@
 
         local getTooltip = ::mods_getMember(o, "getTooltip");
         ::mods_override(o, "getTooltip", function(o) {
-            local results = this.getTooltip(o);
+            local results = getTooltip(o);
 
             local actor = this.getContainer().getActor();
             local stats = this.Const.ScalingMasterMod.GetEnemyKills(actor);
@@ -273,7 +273,7 @@
 
         local onTargetKilled = ::mods_getMember(o, "onTargetKilled");
         ::mods_override(o, "onTargetKilled", function(_targetEntity, _skill) {
-            this.onTargetKilled(_targetEntity, _skill);
+            onTargetKilled(_targetEntity, _skill);
 
             if (background == "background.legend_commander_beggar_op")
             {
