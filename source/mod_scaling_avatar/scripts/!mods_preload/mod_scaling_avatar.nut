@@ -5,7 +5,11 @@
 // IDEAS:
 // - scale gain rates with stars
 // - scale gain rates with starting stats
+
 /*
+
+    // CLEANUP: move to serialized struct BonusStats {}, then override the get stats functions
+    // CLEANUP: move to serialized perks BonusPerks {}, then override the get perks functions
 
     function onAfterUpdate( _properties )
     {
@@ -25,28 +29,6 @@
         {
             _properties.MeleeDefense += 20;
         }
-
-
-
-    // CLEAN: mods_hookClass("skills/traits/player_character_trait").getTooltip()
-    // CLEAN: override 
-    setTotalStats
-        ::mods_hookClass("skills/traits/player_character_trait", function(o) {
-            while (!("getTooltip" in o)) o = o[o.SuperName];
-
-    while (!("onTargetKilled" in o)) o = o[o.SuperName];
-    local onTargetKilled = o.onTargetKilled;
-    o.onTargetKilled = function(_targetEntity, _skill) {
-        local actor = this.getContainer().getActor();
-        calculateScaling(actor, _targetEntity);
-        onTargetKilled(_targetEntity, _skill);
-    }
-
-    local getHitFactors = ::mods_getMember(o, "getHitFactors");
-    ::mods_override(o, "getHitFactors", function(_targetTile)
-    {
-        local ret = getHitFactors(_targetTile);
-
 */
 
 ::ScalingAvatarUtil <- {
@@ -101,7 +83,7 @@
 
         local settingStat = page.addRangeSetting("StatRollPercent", 1, 1, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
         local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 1, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
-        local settingSeperate = page.addBooleanSetting("StatRollIndividual", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
+        local settingSeperate = page.addBooleanSetting("StatRollSeperate", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
         local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additional flat bonus to all stats.");
         local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
 
@@ -114,9 +96,43 @@
         // actual scaling code
 
         ::mods_hookClass("skills/traits/player_character_trait", function(o) {
+
+            readTag = function(tagName) {
+                var r = this.getContainer().getActor().getLifetimeStats().Tags.get(tagName);
+                if (r && r > 0)
+                    return r;
+                return 0;
+            }
+
+            incrementTag = function(tagName) {
+                this.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
+            };
+
+            writeTag = function(tagName, tagValue) {
+                this.getContainer().getActor().getLifetimeStats().Tags.set(tagName, tagValue);
+            };
+
+            readBonusStats = function() {
+                return {
+                    readTag("HitpointsGained"),
+                    readTag("BraveryGained"),
+                    readTag("StaminaGained"),
+                    readTag("MeleeSkillGained"),
+                    readTag("RangedSkillGained"),
+                    readTag("MeleeDefenseGained"),
+                    readTag("RangedDefenseGained"),
+                    readTag("InitiativeGained"),
+                };
+            };
+
+            writeBonusStats = function(s) {
+                // TODO: cleaner
+            };
+
             local getTooltip = ::mods_getMember(o, "getTooltip");
             ::mods_override(o, "getTooltip", function(o) {
-                local results = getTooltip(o);
+                local results = this.getTooltip(o);
+
                 local actor = this.getContainer().getActor();
                 local stats = this.Const.ScalingMasterMod.GetEnemyKills(actor);
 
@@ -134,7 +150,152 @@
                 results.append({ id = 10, type = "text", icon = "ui/icons/ranged_defense.png", text = format_text("Ranged Defense", stats.RangedDefenseGained), });
 
                 return results;
+            });
+
+            function onTargetKilledStats(_targetEntity, _skill) {
+                local actorProps = actor.getBaseProperties();
+                local targetProps = targetEntity.getBaseProperties();
+
+                local learned_something = false;
+                local learned_string = "";
+
+                local scaling_roll_all = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_hitpoints = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_resolve = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_fatigue = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_melee_attack = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_ranged_attack = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_melee_defense = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_ranged_defense = MSU.Math.randf(0.0, 100.0).tointeger();
+                local scaling_roll_initiative = MSU.Math.randf(0.0, 100.0).tointeger();
+
+                if (::ScalingAvatar.StatRollSeperate == false)
+                {
+                    scaling_roll_hitpoints = scaling_roll_all;
+                    scaling_roll_resolve = scaling_roll_all;
+                    scaling_roll_fatigue = scaling_roll_all;
+                    scaling_roll_melee_attack = scaling_roll_all;
+                    scaling_roll_ranged_attack = scaling_roll_all;
+                    scaling_roll_melee_defense = scaling_roll_all;
+                    scaling_roll_ranged_defense = scaling_roll_all;
+                    scaling_roll_initiative = scaling_roll_all;
+                }
+
+                local success_roll_hitpoints = scaling_roll_hitpoints < ::ScalingAvatar.StatRollPercent;
+                local success_roll_resolve = scaling_roll_resolve < ::ScalingAvatar.StatRollPercent;
+                local success_roll_fatigue = scaling_roll_fatigue < ::ScalingAvatar.StatRollPercent;
+                local success_roll_melee_attack = scaling_roll_melee_attack < ::ScalingAvatar.StatRollPercent;
+                local success_roll_ranged_attack = scaling_roll_ranged_attack < ::ScalingAvatar.StatRollPercent;
+                local success_roll_melee_defense = scaling_roll_melee_defense < ::ScalingAvatar.StatRollPercent;
+                local success_roll_ranged_defense = scaling_roll_ranged_defense < ::ScalingAvatar.StatRollPercent;
+                local success_roll_initiative = scaling_roll_initiative < ::ScalingAvatar.StatRollPercent;
+
+                ::ScalingAvatar.VerboseLogDebug("rolling for stat increase...");
+                ::ScalingAvatar.VerboseLogRoll("hitpoints", scaling_roll_hitpoints, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("fatigue", scaling_roll_fatigue, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("resolve", scaling_roll_resolve, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("melee_attack", scaling_roll_melee_attack, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("ranged_attack", scaling_roll_ranged_attack, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("melee_defense", scaling_roll_melee_defense, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("ranged_defense", scaling_roll_ranged_defense, ::ScalingAvatar.StatRollPercent);
+                ::ScalingAvatar.VerboseLogRoll("initiative", scaling_roll_initiative, ::ScalingAvatar.StatRollPercent);
+
+                local roll_handler = function(internalStatName, statName, tagName, rollSuccess) {
+                    if (rollSuccess == false)
+                        return;
+                    if (actorProps[internalStatName] > targetProps[internalStatName])
+                        return;
+
+                    actorProps[internalStatName] += 1;
+                    incrementTag(tagName);
+                    learned_something = true;
+                    learned_string += "[color=" + this.Const.UI.Color.PositiveValue + "]+1[/color] " + statName + ", ";
+                };
+
+                roll_handler("Hitpoints", "Hitpoints", "HitpointsGained", success_roll_hitpoints);
+                roll_handler("Bravery", "Resolve", "HitpointsGained", success_roll_resolve);
+                roll_handler("Stamina", "Fatigue", "StaminaGained", success_roll_fatigue);
+                roll_handler("MeleeSkill", "Melee Skill", "MeleeSkillGained", success_roll_melee_attack);
+                roll_handler("RangedSkill", "Ranged Skill", "RangedSkillGained", success_roll_ranged_attack);
+                roll_handler("MeleeDefense", "Melee Defense", "MeleeDefenseGained", success_roll_melee_defense);
+                roll_handler("RangedDefense", "Ranged Skill", "RangedDefenseGained", success_roll_ranged_defense);
+                roll_handler("Initiative", "Initiative", "InitiativeGained", success_roll_initiative);
+
+                // remove ", "  from end of string using slice function
+                if (learned_string != "") {
+                    local length = learned_string.len();
+                    learned_string = learned_string.slice(0, length - 2);
+                }
+
+                learned_string += ".";
+
+                if (learned_something) {
+                    this.Tactical.EventLog.log(actor.getName() + " has acquired new attributes: " + learned_string);
+                }
             }
+
+            function onTargetKilledPerks(_targetEntity, _skill) {
+                local scaling_roll_perk = MSU.Math.randf(0.0, 100.0).tointeger();
+                local success_roll_perk = scaling_roll_perk < ::ScalingAvatar.PerkRollPercent;
+
+                ::ScalingAvatar.VerboseLogDebug("rolling for perk increase...");
+                ::ScalingAvatar.VerboseLogRoll("perk", scaling_roll_perk, ::ScalingAvatar.PerkRollPercent);
+
+                if (success_roll_perk == false)
+                    return;
+
+                local target_skills = _targetEntity.getSkills().getSkillsByFunction(@(skill) skill.isType(::Const.SkillType.Perk));
+                local candidate_perks = [];
+
+                foreach (perk in target_skills) {
+                    local id = perk.getID();
+                    if (id == "perk.stalwart" || id == "perk.legend_composure" || id == "perk.battering_ram")
+                        continue;
+
+                    if (actor.getSkills().hasSkill(id))
+                        continue;
+
+                    candidate_perks.push(perk);
+                }
+
+                if (candidate_perks.len() == 0)
+                    return;
+
+                local candidate_index = ::Math.rand(0, candidate_perks.len() - 1);
+                local candidate_perk = candidate_perks[candidate_index];
+
+                foreach(i, v in this.Const.Perks.PerkDefObjects)
+                {
+                    if (perk.getID() == v.ID) {
+                        if (v.Script != "") {
+                            this.Tactical.EventLog.log(colorizeString(actor.getName(), "#3b3fe7") + " learned " + colorizeString(perk.getName(), "#3b3fe7") + " from his enemy!");
+                            actor.m.PerkPointsSpent++;
+                            actor.getSkills().add(this.new(v.Script));
+                            local rowToAddPerk = 0;
+                            local length = actor.getBackground().getPerkTree()[0].len();
+                            foreach(i, row in actor.getBackground().getPerkTree()) {
+                                if (row.len() < length) rowToAddPerk = i;
+                            }
+                            actor.getBackground().addPerk(i, rowToAddPerk);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            local onTargetKilled = ::mods_getMember(o, "onTargetKilled");
+            ::mods_override(o, "onTargetKilled", function(_targetEntity, _skill) {
+                this.onTargetKilled(_targetEntity, _skill);
+
+                if (background == "background.legend_commander_beggar_op")
+                {
+                    ::ScalingAvatar.VerboseLogDebug("skipping because already scaling beggar...");
+                    return;
+                }
+
+                onTargetKilledStats(_targetEntity, _skill);
+                onTargetKilledPerks(_targetEntity, _skill);
+            });
         });
 
         ::mods_hookClass("skills/traits/player_character_trait", function(o) {

@@ -4,7 +4,7 @@ if (!("ScalingMasterMod" in gt.Const)) {
     gt.Const.ScalingMasterMod <- {};
 }
 
-gt.Const.ScalingMasterMod.SetEnemyKills <- function(actor, targetEntity) {
+gt.Const.ScalingMasterMod.OnTargetKillRolls <- function(actor, targetEntity) {
     local actorProps = actor.getBaseProperties();
     local targetProps = targetEntity.getBaseProperties();
     local background = actor.getBackground().getID();
