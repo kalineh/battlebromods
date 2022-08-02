@@ -5,17 +5,16 @@ if (!("ScalingMasterMod" in gt.Const)) {
 }
 
 gt.Const.ScalingMasterMod.SetEnemyKills <- function(actor, targetEntity) {
-    local learned_something = false;
-    local learned_string = "";
-
     local actorProps = actor.getBaseProperties();
     local targetProps = targetEntity.getBaseProperties();
     local background = actor.getBackground().getID();
     local background_beggar = false;
 
-    if (background == "background.legend_commander_beggar_op") {
-        background_beggar = true;
-    }
+    if (background == "background.legend_commander_beggar_op")
+        return;
+
+    local learned_something = false;
+    local learned_string = "";
 
     local scaling_roll_all = MSU.Math.randf(0.0, 100.0).tointeger();
     local scaling_roll_hitpoints = MSU.Math.randf(0.0, 100.0).tointeger();
@@ -61,74 +60,50 @@ gt.Const.ScalingMasterMod.SetEnemyKills <- function(actor, targetEntity) {
     local plus_one_string = "[color=" + this.Const.UI.Color.PositiveValue + "]+" + 1 + "[/color] ";
 
     if (actorProps.Hitpoints < targetProps.Hitpoints && success_roll_hitpoints) {
-        if (!background_beggar) {
-            actorProps.Hitpoints += 1;
-        }
-        local favKey = "HitpointsGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.Hitpoints += 1;
+        actor.getLifetimeStats().Tags.increment("HitpointsGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Hitpoints, ";
     }
     if (actorProps.Bravery < targetProps.Bravery && success_roll_resolve) {
-        if (!background_beggar) {
-            actorProps.Bravery += 1;
-        }
-        local favKey = "BraveryGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.Bravery += 1;
+        actor.getLifetimeStats().Tags.increment("BraveryGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Resolve, ";
     }
     if (actorProps.Stamina < targetProps.Stamina && success_roll_fatigue) {
-        if (!background_beggar) {
-            actorProps.Stamina += 1;
-        }
-        local favKey = "StaminaGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.Stamina += 1;
+        actor.getLifetimeStats().Tags.increment("StaminaGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Fatigue, ";
     }
     if (actorProps.MeleeSkill < targetProps.MeleeSkill && success_roll_melee_attack) {
-        if (!background_beggar) {
-            actorProps.MeleeSkill += 1;
-        }
-        local favKey = "MeleeSkillGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.MeleeSkill += 1;
+        actor.getLifetimeStats().Tags.increment("MeleeSkillGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Melee Skill, ";
     }
     if (actorProps.RangedSkill < targetProps.RangedSkill && success_roll_ranged_attack) {
-        if (!background_beggar) {
-            actorProps.RangedSkill += 1;
-        }
-        local favKey = "RangedSkillGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.RangedSkill += 1;
+        actor.getLifetimeStats().Tags.increment("RangedSkillGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Ranged Skill, ";
     }
     if (actorProps.MeleeDefense < targetProps.MeleeDefense && success_roll_melee_defense) {
-        if (!background_beggar) {
-            actorProps.MeleeDefense += 1;
-        }
-        local favKey = "MeleeDefenseGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.MeleeDefense += 1;
+        actor.getLifetimeStats().Tags.increment("MeleeDefenseGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Melee Defense, ";
     }
     if (actorProps.RangedDefense < targetProps.RangedDefense && success_roll_ranged_defense) {
-        if (!background_beggar) {
-            actorProps.RangedDefense += 1;
-        }
-        local favKey = "RangedDefenseGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.RangedDefense += 1;
+        actor.getLifetimeStats().Tags.increment("RangedDefenseGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Ranged Defense, ";
     }
     if (actorProps.Initiative < targetProps.Initiative && success_roll_initiative) {
-        if (!background_beggar) {
-            actorProps.Initiative += 1;
-        }
-        local favKey = "InitiativeGained";
-        actor.getLifetimeStats().Tags.increment(favKey, 1);
+        actorProps.Initiative += 1;
+        actor.getLifetimeStats().Tags.increment("InitiativeGained", 1);
         learned_something = true;
         learned_string += plus_one_string + "Initiative, ";
     }

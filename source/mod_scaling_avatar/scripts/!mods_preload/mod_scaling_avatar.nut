@@ -1,9 +1,45 @@
+
+// TODO:
+// - apply bonus stats easier
+// - remove avatar built-in resolve
+// IDEAS:
+// - scale gain rates with stars
+// - scale gain rates with starting stats
+/*
+
+    function onAfterUpdate( _properties )
+    {
+                local actor = this.getContainer().getActor();
+        local headt = this.getContainer().getActor().getItems().getItemAtSlot(this.Const.ItemSlot.Head);
+        if (headt == null)
+        {
+            _properties.MeleeDefense += 20;
+        }u
+        this.dark_wraith_background <- this.inherit("scripts/skills/backgrounds/character_background", {
+
+    function onAfterUpdate( _properties )
+    {
+                local actor = this.getContainer().getActor();
+        local headt = this.getContainer().getActor().getItems().getItemAtSlot(this.Const.ItemSlot.Head);
+        if (headt == null)
+        {
+            _properties.MeleeDefense += 20;
+        }
+*/
+
+::ScalingAvatarUtil <- {
+    function colorizeString(_string, _color) {
+        local string = "[color=" + _color + "]" + _string + "[/color]";
+        return string;
+    },
+};
+
 ::ScalingAvatar <- {
     ID = "mod_scaling_avatar",
     Name = "ScalingAvatar",
     Version = "0.0.2",
-    StatBonusInitial = 0,
-    StatRollSeperate = true,
+    StatBonusFlat = 0,
+    ToggleSeperateStatRoll = true,
     StatRollPercent = 100,
     PerkRollPercent = 100,
     VerboseLogging = true,
@@ -29,17 +65,13 @@
         this.Tactical.EventLog.log(text);
     },
 }
-::mods_registerMod(::ScalingAvatar.ID, ::ScalingAvatar.Version, ::ScalingAvatar.Name)
+
+::mods_registerMod(::ScalingAvatar.ID, ::ScalingAvatar.Version, ::ScalingAvatar.Name);
 
     ::mods_queue(::ScalingAvatar.ID, "mod_legends", function() {
 
         ::ScalingAvatar.Mod <- ::MSU.Class.Mod(::ScalingAvatar.ID, ::ScalingAvatar.Version, ::ScalingAvatar.Name);
         ::ScalingAvatar.Mod.Debug.setFlag("debug", true)
-
-        local scaling_roll_all = MSU.Math.randf(0.0, 100.0);
-        local scaling_roll_all_int = scaling_roll_all.tointeger();
-
-        ::ScalingAvatar.VerboseLogDebug("RANDOM: " + scaling_roll_all_int);
 
         // MSU options setup
 
@@ -48,14 +80,14 @@
         local settingStat = page.addRangeSetting("StatRollPercent", 1, 1, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
         local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 1, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
         local settingSeperate = page.addBooleanSetting("StatRollIndividual", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
+        local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additiona flat bonus to all stats.");
         local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
-        local settingInitial = page.addRangeSetting("StatInitial", 1, 1, 100, 1.0, "Stat Initial Bonus", "Starting bonus stats value (must be set before campaign is started).");
 
         settingStat.addCallback(function(_value) { ::ScalingAvatar.StatRollPercent = _value; });
         settingPerk.addCallback(function(_value) { ::ScalingAvatar.PerkRollPercent = _value; });
-        settingSeperate.addCallback(function(_value) { ::ScalingAvatar.StatRollSeperate = _value; });
+        settingSeperate.addCallback(function(_value) { ::ScalingAvatar.ToggleSeperateStatRoll = _value; });
+        settingFlat.addCallback(function(_value) { ::ScalingAvatar.StatBonusFlat = _value.tointeger(); });
         settingVerbose.addCallback(function(_value) { ::ScalingAvatar.VerboseLogging = _value; });
-        settingInitial.addCallback(function(_value) { ::ScalingAvatar.StatBonusInitial = _value.tointeger(); });
 
         // actual scaling code
 
@@ -136,6 +168,7 @@
                 this.Const.ScalingMasterMod.SetEnemyKills(_actor, _targetEntity);
             }
 
+            // TODO: move to util
             function colorizeString(_string, _color) {
                 local string = "[color=" + _color + "]" + _string + "[/color]";
                 return string;
