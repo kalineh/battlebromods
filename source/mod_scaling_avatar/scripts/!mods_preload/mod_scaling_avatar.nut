@@ -87,7 +87,7 @@
 
     // actual scaling code
 
-    ::mods_hookClass("skills/traits/player_character_trait", function(o) {
+    ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
 
         readTag = function(tagName) {
             var r = this.getContainer().getActor().getLifetimeStats().Tags.get(tagName);
