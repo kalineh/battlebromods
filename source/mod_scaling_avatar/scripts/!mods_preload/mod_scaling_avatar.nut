@@ -89,34 +89,44 @@
 
     ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
 
-        readStatTag = function(tagName) {
+        o.m.scalingAvatar_readStatTag <- function(tagName) {
             return this.getContainer().getActor().getLifetimeStats().Tags.getAsInt(tagName);
-        }
+        };
 
-        readStatTags = function() {
+        o.m.scalingAvatar_readStatTags <- function() {
             return {
-                HitpointsGained = readStatTag("HitpointsGained"),
-                BraveryGained = readStatTag("BraveryGained"),
-                StaminaGained = readStatTag("StaminaGained"),
-                MeleeSkillGained = readStatTag("MeleeSkillGained"),
-                RangedSkillGained = readStatTag("RangedSkillGained"),
-                MeleeDefenseGained = readStatTag("MeleeDefenseGained"),
-                RangedDefenseGained = readStatTag("RangedDefenseGained"),
-                InitiativeGained = readStatTag("InitiativeGained"),
+                HitpointsGained = this.readStatTag("HitpointsGained"),
+                BraveryGained = this.readStatTag("BraveryGained"),
+                StaminaGained = this.readStatTag("StaminaGained"),
+                MeleeSkillGained = this.readStatTag("MeleeSkillGained"),
+                RangedSkillGained = this.readStatTag("RangedSkillGained"),
+                MeleeDefenseGained = this.readStatTag("MeleeDefenseGained"),
+                RangedDefenseGained = this.readStatTag("RangedDefenseGained"),
+                InitiativeGained = this.readStatTag("InitiativeGained"),
             };
         };
 
-        incrementTag = function(tagName) {
+        o.m.scalingAvatar_incrementTag <- function(tagName) {
             this.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
         };
 
         local getTooltip = ::mods_getMember(o, "getTooltip");
-        ::mods_override(o, "getTooltip", function(o) {
-            local results = getTooltip(o);
+        ::mods_override(o, "getTooltip", function() {
+            local results = getTooltip();
+
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this, "debug");
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.getContainer(), "debug");
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.getContainer().getActor(), "debug");
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.scalingAvatar_readStatTags, "debug");
 
             local actor = this.getContainer().getActor();
-            local stats = readStatTags();
+            local stats = this.scalingAvatar_readStatTags();
 
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + actor, "debug");
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + stats, "debug");
+
+            return results;
+            
             local format_text = function(statName, statValue) {
                 return format("[color=%s]+%d[/color] %s gained due to scaling effect", this.Const.UI.Color.PositiveValue, statValue, statName);
             };
