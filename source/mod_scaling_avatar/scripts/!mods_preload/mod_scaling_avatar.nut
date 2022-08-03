@@ -62,6 +62,28 @@
         ::ScalingAvatar.Mod.Debug.printLog(text, "debug");
         this.Tactical.EventLog.log(text);
     },
+
+
+    ReadStatTag = function(o, tagName) {
+        return o.getContainer().getActor().getLifetimeStats().Tags.getAsInt(tagName);
+    },
+
+    ReadStatTags = function(o) {
+        return {
+            HitpointsGained = ::ScalingAvatar.ReadStatTag(o, "HitpointsGained"),
+            BraveryGained = ::ScalingAvatar.ReadStatTag(o, "BraveryGained"),
+            StaminaGained = ::ScalingAvatar.ReadStatTag(o, "StaminaGained"),
+            MeleeSkillGained = ::ScalingAvatar.ReadStatTag(o, "MeleeSkillGained"),
+            RangedSkillGained = ::ScalingAvatar.ReadStatTag(o, "RangedSkillGained"),
+            MeleeDefenseGained = ::ScalingAvatar.ReadStatTag(o, "MeleeDefenseGained"),
+            RangedDefenseGained = ::ScalingAvatar.ReadStatTag(o, "RangedDefenseGained"),
+            InitiativeGained = ::ScalingAvatar.ReadStatTag(o, "InitiativeGained"),
+        };
+    },
+
+    IncrementStatTag = function(o, tagName) {
+        o.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
+    },
 }
 
 ::mods_registerMod(::ScalingAvatar.ID, ::ScalingAvatar.Version, ::ScalingAvatar.Name);
@@ -90,50 +112,35 @@
 
     ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
 
-        o.m.scalingAvatar_readStatTag <- function(tagName) {
-            return this.getContainer().getActor().getLifetimeStats().Tags.getAsInt(tagName);
-        };
-
-        o.m.scalingAvatar_readStatTags <- function() {
-            return {
-                HitpointsGained = this.readStatTag("HitpointsGained"),
-                BraveryGained = this.readStatTag("BraveryGained"),
-                StaminaGained = this.readStatTag("StaminaGained"),
-                MeleeSkillGained = this.readStatTag("MeleeSkillGained"),
-                RangedSkillGained = this.readStatTag("RangedSkillGained"),
-                MeleeDefenseGained = this.readStatTag("MeleeDefenseGained"),
-                RangedDefenseGained = this.readStatTag("RangedDefenseGained"),
-                InitiativeGained = this.readStatTag("InitiativeGained"),
-            };
-        };
-
-        o.m.scalingAvatar_incrementTag <- function(tagName) {
-            this.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
-        };
-
         local getTooltip = ::mods_getMember(o, "getTooltip");
         ::mods_override(o, "getTooltip", function() {
             local results = getTooltip();
 
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this, "debug");
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.getContainer(), "debug");
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.getContainer().getActor(), "debug");
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.m, "debug");
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.m.scalingAvatar_readStatTags, "debug");
+            results.append(
+            {
+                id = 2,
+                type = "description ",
+                text = "TEST TEST",
+            });
+            return results;
 
             local actor = this.getContainer().getActor();
-            local stats = this.m.scalingAvatar_readStatTags();
+            local stats = ::ScalingAvatar.ReadStatTag(this);
 
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + actor, "debug");
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + stats, "debug");
+            //::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + actor, "debug");
+            //::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + stats, "debug");
 
-            return results;
+            //return results;
             
-            local format_text = function(statName, statValue) {
-                return format("[color=%s]+%d[/color] %s gained due to scaling effect", this.Const.UI.Color.PositiveValue, statValue, statName);
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: func1", "debug");
+            local format_text <- function(statName, statValue) {
+                //return format("[color=%s]+%d[/color] %s gained due to scaling effect", this.Const.UI.Color.PositiveValue, statValue, statName);
+                return "[color=" + this.Const.UI.Color.PositiveValue + "]+" + statValue + "[/color] " + statName + " gained due to scaling effect";
             };
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: func2", "debug");
 
             results.append({ id = 10, type = "text", icon = "ui/icons/health.png", text = format_text("Hitpoints", stats.HitpointsGained), });
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: func3", "debug");
             results.append({ id = 10, type = "text", icon = "ui/icons/bravery.png", text = format_text("Resolve", stats.BraveryGained), });
             results.append({ id = 10, type = "text", icon = "ui/icons/fatigue.png", text = format_text("Fatigue", stats.StaminaGained), });
             results.append({ id = 10, type = "text", icon = "ui/icons/initiative.png", text = format_text("Initiative", stats.InitiativeGained), });
@@ -200,7 +207,7 @@
                     return;
 
                 actorProps[internalStatName] += 1;
-                this.m.incrementTag(tagName);
+                ::ScalingAvatar.IncrementStatTag(this, tagName);
                 learned_something = true;
                 learned_string += "[color=" + this.Const.UI.Color.PositiveValue + "]+1[/color] " + statName + ", ";
             };
