@@ -5,6 +5,7 @@
 // IDEAS:
 // - scale gain rates with stars
 // - scale gain rates with starting stats
+// - scale % up per diff % instead of just >
 
 /*
 
@@ -117,10 +118,11 @@
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this, "debug");
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.getContainer(), "debug");
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.getContainer().getActor(), "debug");
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.scalingAvatar_readStatTags, "debug");
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.m, "debug");
+            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + this.m.scalingAvatar_readStatTags, "debug");
 
             local actor = this.getContainer().getActor();
-            local stats = this.scalingAvatar_readStatTags();
+            local stats = this.m.scalingAvatar_readStatTags();
 
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + actor, "debug");
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + stats, "debug");
@@ -198,7 +200,7 @@
                     return;
 
                 actorProps[internalStatName] += 1;
-                incrementTag(tagName);
+                this.m.incrementTag(tagName);
                 learned_something = true;
                 learned_string += "[color=" + this.Const.UI.Color.PositiveValue + "]+1[/color] " + statName + ", ";
             };
