@@ -98,14 +98,15 @@
 
     local settingStat = page.addRangeSetting("StatRollPercent", 1, 1, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
     local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 1, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
+    //local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additional flat bonus to all stats.");
+    
     local settingSeperate = page.addBooleanSetting("ToggleSeperateStatRoll", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
-    local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additional flat bonus to all stats.");
     local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
 
     settingStat.addCallback(function(_value) { ::ScalingAvatar.StatRollPercent = _value; });
     settingPerk.addCallback(function(_value) { ::ScalingAvatar.PerkRollPercent = _value; });
     settingSeperate.addCallback(function(_value) { ::ScalingAvatar.ToggleSeperateStatRoll = _value; });
-    settingFlat.addCallback(function(_value) { ::ScalingAvatar.StatBonusFlat = _value.tointeger(); });
+    //settingFlat.addCallback(function(_value) { ::ScalingAvatar.StatBonusFlat = _value.tointeger(); });
     settingVerbose.addCallback(function(_value) { ::ScalingAvatar.VerboseLogging = _value; });
 
     // actual scaling code
