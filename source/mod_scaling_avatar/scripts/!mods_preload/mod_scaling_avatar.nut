@@ -98,7 +98,7 @@
 
     local settingStat = page.addRangeSetting("StatRollPercent", 1, 1, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
     local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 1, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
-    local settingSeperate = page.addBooleanSetting("StatRollSeperate", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
+    local settingSeperate = page.addBooleanSetting("ToggleSeperateStatRoll", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
     local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additional flat bonus to all stats.");
     local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
 
@@ -112,35 +112,26 @@
 
     ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
 
-        local getTooltip = ::mods_getMember(o, "getTooltip");
+        //foreach (k,v in o)
+            //::ScalingAvatar.Mod.Debug.printLog("trait: " + k + "=" + v, "debug");
+        // this = root table? msu core stuff?
+        // o = trait object
+        // o.m = member data? class-specific?
+
+        local base_getTooltip = ::mods_getMember(o, "getTooltip");
         ::mods_override(o, "getTooltip", function() {
-            local results = getTooltip();
-
-            results.append(
-            {
-                id = 2,
-                type = "description ",
-                text = "TEST TEST",
-            });
-            return results;
-
             local actor = this.getContainer().getActor();
-            local stats = ::ScalingAvatar.ReadStatTag(this);
-
-            //::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + actor, "debug");
-            //::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + stats, "debug");
-
-            //return results;
+            local stats = ::ScalingAvatar.ReadStatTags(this);
+            local results = base_getTooltip();
             
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: func1", "debug");
-            local format_text <- function(statName, statValue) {
+            local format_text = function(statName, statValue) {
                 //return format("[color=%s]+%d[/color] %s gained due to scaling effect", this.Const.UI.Color.PositiveValue, statValue, statName);
                 return "[color=" + this.Const.UI.Color.PositiveValue + "]+" + statValue + "[/color] " + statName + " gained due to scaling effect";
             };
             ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: func2", "debug");
 
             results.append({ id = 10, type = "text", icon = "ui/icons/health.png", text = format_text("Hitpoints", stats.HitpointsGained), });
-            ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: func3", "debug");
             results.append({ id = 10, type = "text", icon = "ui/icons/bravery.png", text = format_text("Resolve", stats.BraveryGained), });
             results.append({ id = 10, type = "text", icon = "ui/icons/fatigue.png", text = format_text("Fatigue", stats.StaminaGained), });
             results.append({ id = 10, type = "text", icon = "ui/icons/initiative.png", text = format_text("Initiative", stats.InitiativeGained), });
@@ -152,9 +143,10 @@
             return results;
         });
 
-        function onTargetKilledStats(_targetEntity, _skill) {
+        local scalingAvatarOnTargetKilledStats = function(_targetEntity, _skill) {
+            local actor = this.getContainer().getActor();
             local actorProps = actor.getBaseProperties();
-            local targetProps = targetEntity.getBaseProperties();
+            local targetProps = _targetEntity.getBaseProperties();
 
             local learned_something = false;
             local learned_string = "";
@@ -169,7 +161,7 @@
             local scaling_roll_ranged_defense = Math.rand(0, 100);
             local scaling_roll_initiative = Math.rand(0, 100);
 
-            if (::ScalingAvatar.StatRollSeperate == false)
+            if (::ScalingAvatar.ToggleSeperateStatRoll == false)
             {
                 scaling_roll_hitpoints = scaling_roll_all;
                 scaling_roll_resolve = scaling_roll_all;
@@ -232,9 +224,11 @@
             if (learned_something) {
                 this.Tactical.EventLog.log(actor.getName() + " has acquired new attributes: " + learned_string);
             }
-        }
+        };
 
-        function onTargetKilledPerks(_targetEntity, _skill) {
+        local scalingAvatarOnTargetKilledPerks = function(_targetEntity, _skill) {
+            local actor = this.getContainer().getActor();
+
             local scaling_roll_perk = Math.rand(0, 100);
             local success_roll_perk = scaling_roll_perk < ::ScalingAvatar.PerkRollPercent;
 
@@ -257,8 +251,8 @@
             if (target_skills_clean.len() == 0)
                 return;
 
-            local candidate_index = ::Math.rand(0, candidate_perks.len() - 1);
-            local perk = candidate_perks[candidate_index];
+            local perk_index = ::Math.rand(0, target_skills_clean.len() - 1);
+            local perk = target_skills_clean[perk_index];
 
             foreach(i, v in this.Const.Perks.PerkDefObjects)
             {
@@ -277,11 +271,14 @@
                     }
                 }
             }
-        }
+        };
 
-        local onTargetKilled = ::mods_getMember(o, "onTargetKilled");
+        local base_onTargetKilled = ::mods_getMember(o, "onTargetKilled");
         ::mods_override(o, "onTargetKilled", function(_targetEntity, _skill) {
-            onTargetKilled(_targetEntity, _skill);
+            base_onTargetKilled(_targetEntity, _skill);
+
+            local actor = this.getContainer().getActor();
+            local background = actor.getBackground().getID();
 
             if (background == "background.legend_commander_beggar_op")
             {
@@ -289,8 +286,8 @@
                 return;
             }
 
-            onTargetKilledStats(_targetEntity, _skill);
-            onTargetKilledPerks(_targetEntity, _skill);
+            scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
+            scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
         });
     });
 });
