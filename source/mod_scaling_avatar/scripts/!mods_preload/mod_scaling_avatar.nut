@@ -1,3 +1,11 @@
+// CHANGELOG:
+// 0.0.1
+// - imported from druwski code
+// - added percentage scaling
+// - added msu options config
+// 0.0.2
+// - rewrite and simplify codebase
+// - added talent-based modifiers
 
 // TODO:
 // - apply bonus stats easier
@@ -6,6 +14,8 @@
 // - scale gain rates with stars
 // - scale gain rates with starting stats
 // - scale % up per diff % instead of just >
+
+// flat stat use getpropertiesbeforeuse thing
 
 /*
 
@@ -38,8 +48,11 @@
     Version = "0.0.2",
     StatBonusFlat = 0,
     ToggleSeperateStatRoll = true,
-    StatRollPercent = 100,
-    PerkRollPercent = 100,
+    StatRollPercent = 25,
+    StatRollModifier = -10,
+    StatRollPercentPerStar = 10,
+    StatRollModifierPerStar = -5,
+    PerkRollPercent = 25,
     VerboseLogging = true,
 
     VerboseLogDebug = function(str) {
@@ -96,10 +109,16 @@
 
     local page = ::ScalingAvatar.Mod.ModSettings.addPage("General");
 
-    local settingStat = page.addRangeSetting("StatRollPercent", 1, 1, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
-    local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 1, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
+    //function addRangeSetting( _id, _value, _min, _max, _step, _name = null, _description = null )
+
+    local settingStat = page.addRangeSetting("StatRollPercent", 25, 0, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
+    local settingStatPerStar = page.addRangeSetting("StatRollPercentPerStar", 10, 0, 100, 1.0, "Stat Roll Percent Per Star", "Extra gain chance per talent star.");
+    local settingStatMod = page.addRangeSetting("StatRollModifier", -10, -100, 100, 1.0, "Stat Roll Modifier", "Extra difference between stats check (lower means easier gain).");
+    local settingStatModPerStar = page.addRangeSetting("StatRollModifierPerStar", -5, -100, 100, 1.0, "Stat Roll Modifier Per Star", "Extra difference between stats check per star.");
+
+    local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 25, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
     //local settingFlat = page.addRangeSetting("StatFlat", 1, 1, 100, 1.0, "Stat Flat Bonus", "Additional flat bonus to all stats.");
-    
+
     local settingSeperate = page.addBooleanSetting("ToggleSeperateStatRoll", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
     local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
 
@@ -174,29 +193,49 @@
                 scaling_roll_initiative = scaling_roll_all;
             }
 
-            local success_roll_hitpoints = scaling_roll_hitpoints < ::ScalingAvatar.StatRollPercent;
-            local success_roll_resolve = scaling_roll_resolve < ::ScalingAvatar.StatRollPercent;
-            local success_roll_fatigue = scaling_roll_fatigue < ::ScalingAvatar.StatRollPercent;
-            local success_roll_melee_attack = scaling_roll_melee_attack < ::ScalingAvatar.StatRollPercent;
-            local success_roll_ranged_attack = scaling_roll_ranged_attack < ::ScalingAvatar.StatRollPercent;
-            local success_roll_melee_defense = scaling_roll_melee_defense < ::ScalingAvatar.StatRollPercent;
-            local success_roll_ranged_defense = scaling_roll_ranged_defense < ::ScalingAvatar.StatRollPercent;
-            local success_roll_initiative = scaling_roll_initiative < ::ScalingAvatar.StatRollPercent;
+                //local talents = _event.m.Dude.getTalents();
+                //talents.resize(this.Const.Attributes.COUNT, 0);
+                //talents[this.Const.Attributes.MeleeSkill] = 2;
+                //talents[this.Const.Attributes.MeleeDefense] = 3;
+                //talents[this.Const.Attributes.RangedDefense] = 3;
+
+            local talents = actor.getTalents();
+
+            local pct = ::ScalingAvatar.StatRollPercent;
+            local pctStar = ::ScalingAvatar.StatRollPercentPerStar;
+
+            local chance_hitpoints = pct + pctStar * talents[this.Const.Attributes.Hitpoints];
+            local chance_resolve = pct + pctStar * talents[this.Const.Attributes.Bravery];
+            local chance_fatigue = pct + pctStar * talents[this.Const.Attributes.Stamina];
+            local chance_melee_attack = pct + pctStar * talents[this.Const.Attributes.MeleeAtack];
+            local chance_ranged_attack = pct + pctStar * talents[this.Const.Attributes.RangedAttack];
+            local chance_melee_defense = pct + pctStar * talents[this.Const.Attributes.MeleeDefense];
+            local chance_ranged_defense = pct + pctStar * talents[this.Const.Attributes.RangedDefense];
+            local chance_initiative = pct + pctStar * talents[this.Const.Attributes.Initiative];
+
+            local success_roll_hitpoints = scaling_roll_hitpoints < chance_hitpoints;
+            local success_roll_resolve = scaling_roll_resolve < chance_resolve;
+            local success_roll_fatigue = scaling_roll_fatigue < chance_fatigue;
+            local success_roll_melee_attack = scaling_roll_melee_attack < chance_melee_attack;
+            local success_roll_ranged_attack = scaling_roll_ranged_attack < chance_ranged_attack;
+            local success_roll_melee_defense = scaling_roll_melee_defense < chance_melee_defense;
+            local success_roll_ranged_defense = scaling_roll_ranged_defense < chance_ranged_defense;
+            local success_roll_initiative = scaling_roll_initiative < chance_initiative;
 
             ::ScalingAvatar.VerboseLogDebug("rolling for stat increase...");
-            ::ScalingAvatar.VerboseLogRoll("hitpoints", scaling_roll_hitpoints, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("fatigue", scaling_roll_fatigue, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("resolve", scaling_roll_resolve, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("melee_attack", scaling_roll_melee_attack, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("ranged_attack", scaling_roll_ranged_attack, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("melee_defense", scaling_roll_melee_defense, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("ranged_defense", scaling_roll_ranged_defense, ::ScalingAvatar.StatRollPercent);
-            ::ScalingAvatar.VerboseLogRoll("initiative", scaling_roll_initiative, ::ScalingAvatar.StatRollPercent);
+            ::ScalingAvatar.VerboseLogRoll("hitpoints", scaling_roll_hitpoints, chance_hitpoints);
+            ::ScalingAvatar.VerboseLogRoll("fatigue", scaling_roll_fatigue, chance_fatigue);
+            ::ScalingAvatar.VerboseLogRoll("resolve", scaling_roll_resolve, chance_resolve);
+            ::ScalingAvatar.VerboseLogRoll("melee_attack", scaling_roll_melee_attack, chance_melee_attack);
+            ::ScalingAvatar.VerboseLogRoll("ranged_attack", scaling_roll_ranged_attack, chance_ranged_attack);
+            ::ScalingAvatar.VerboseLogRoll("melee_defense", scaling_roll_melee_defense, chance_melee_defense);
+            ::ScalingAvatar.VerboseLogRoll("ranged_defense", scaling_roll_ranged_defense, chance_ranged_defense);
+            ::ScalingAvatar.VerboseLogRoll("initiative", scaling_roll_initiative, chance_initiative);
 
-            local roll_handler = function(internalStatName, statName, tagName, rollSuccess) {
+            local roll_handler = function(internalStatName, statName, tagName, rollSuccess, statModifier) {
                 if (rollSuccess == false)
                     return;
-                if (actorProps[internalStatName] > targetProps[internalStatName])
+                if (actorProps[internalStatName] > targetProps[internalStatName] + statModifier)
                     return;
 
                 actorProps[internalStatName] += 1;
@@ -205,14 +244,26 @@
                 learned_string += "[color=" + this.Const.UI.Color.PositiveValue + "]+1[/color] " + statName + ", ";
             };
 
-            roll_handler("Hitpoints", "Hitpoints", "HitpointsGained", success_roll_hitpoints);
-            roll_handler("Bravery", "Resolve", "HitpointsGained", success_roll_resolve);
-            roll_handler("Stamina", "Fatigue", "StaminaGained", success_roll_fatigue);
-            roll_handler("MeleeSkill", "Melee Skill", "MeleeSkillGained", success_roll_melee_attack);
-            roll_handler("RangedSkill", "Ranged Skill", "RangedSkillGained", success_roll_ranged_attack);
-            roll_handler("MeleeDefense", "Melee Defense", "MeleeDefenseGained", success_roll_melee_defense);
-            roll_handler("RangedDefense", "Ranged Skill", "RangedDefenseGained", success_roll_ranged_defense);
-            roll_handler("Initiative", "Initiative", "InitiativeGained", success_roll_initiative);
+            local modifier = ::ScalingAvatar.StatRollModification;
+            local modifierStar = ::ScalingAvatar.StatRollModifierPerStar;
+
+            local modifier_hitpoints = modifier + modifierStar * talents[this.Const.Attributes.Hitpoints];
+            local modifier_resolve = modifier + modifierStar * talents[this.Const.Attributes.Bravery];
+            local modifier_fatigue = modifier + modifierStar * talents[this.Const.Attributes.Stamina];
+            local modifier_melee_attack = modifier + modifierStar * talents[this.Const.Attributes.MeleeAtack];
+            local modifier_ranged_attack = modifier + modifierStar * talents[this.Const.Attributes.RangedAttack];
+            local modifier_melee_defense = modifier + modifierStar * talents[this.Const.Attributes.MeleeDefense];
+            local modifier_ranged_defense = modifier + modifierStar * talents[this.Const.Attributes.RangedDefense];
+            local modifier_initiative = modifier + modifierStar * talents[this.Const.Attributes.Initiative];
+
+            roll_handler("Hitpoints", "Hitpoints", "HitpointsGained", success_roll_hitpoints, modifier_hitpoints);
+            roll_handler("Bravery", "Resolve", "BraveryGained", success_roll_resolve, modifier_resolve);
+            roll_handler("Stamina", "Fatigue", "StaminaGained", success_roll_fatigue, modifier_fatigue);
+            roll_handler("MeleeSkill", "Melee Skill", "MeleeSkillGained", success_roll_melee_attack, modifier_melee_attack);
+            roll_handler("RangedSkill", "Ranged Skill", "RangedSkillGained", success_roll_ranged_attack, modifier_ranged_attack);
+            roll_handler("MeleeDefense", "Melee Defense", "MeleeDefenseGained", success_roll_melee_defense, modifier_melee_defense);
+            roll_handler("RangedDefense", "Ranged Skill", "RangedDefenseGained", success_roll_ranged_defense, modifier_ranged_defense);
+            roll_handler("Initiative", "Initiative", "InitiativeGained", success_roll_initiative, modifier_initiative);
 
             // remove ", "  from end of string using slice function
             if (learned_string != "") {
