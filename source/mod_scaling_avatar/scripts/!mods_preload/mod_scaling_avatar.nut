@@ -206,12 +206,24 @@
 
             local chance_hitpoints = pct + pctStar * talents[this.Const.Attributes.Hitpoints];
             local chance_resolve = pct + pctStar * talents[this.Const.Attributes.Bravery];
-            local chance_fatigue = pct + pctStar * talents[this.Const.Attributes.Stamina];
-            local chance_melee_attack = pct + pctStar * talents[this.Const.Attributes.MeleeAtack];
-            local chance_ranged_attack = pct + pctStar * talents[this.Const.Attributes.RangedAttack];
+            local chance_fatigue = pct + pctStar * talents[this.Const.Attributes.Fatigue];
+            local chance_melee_attack = pct + pctStar * talents[this.Const.Attributes.MeleeSkill];
+            local chance_ranged_attack = pct + pctStar * talents[this.Const.Attributes.RangedSkill];
             local chance_melee_defense = pct + pctStar * talents[this.Const.Attributes.MeleeDefense];
             local chance_ranged_defense = pct + pctStar * talents[this.Const.Attributes.RangedDefense];
             local chance_initiative = pct + pctStar * talents[this.Const.Attributes.Initiative];
+
+            local modifier = ::ScalingAvatar.StatRollModifier;
+            local modifierStar = ::ScalingAvatar.StatRollModifierPerStar;
+
+            local modifier_hitpoints = modifier + modifierStar * talents[this.Const.Attributes.Hitpoints];
+            local modifier_resolve = modifier + modifierStar * talents[this.Const.Attributes.Bravery];
+            local modifier_fatigue = modifier + modifierStar * talents[this.Const.Attributes.Fatigue];
+            local modifier_melee_attack = modifier + modifierStar * talents[this.Const.Attributes.MeleeSkill];
+            local modifier_ranged_attack = modifier + modifierStar * talents[this.Const.Attributes.RangedSkill];
+            local modifier_melee_defense = modifier + modifierStar * talents[this.Const.Attributes.MeleeDefense];
+            local modifier_ranged_defense = modifier + modifierStar * talents[this.Const.Attributes.RangedDefense];
+            local modifier_initiative = modifier + modifierStar * talents[this.Const.Attributes.Initiative];
 
             local success_roll_hitpoints = scaling_roll_hitpoints < chance_hitpoints;
             local success_roll_resolve = scaling_roll_resolve < chance_resolve;
@@ -243,18 +255,6 @@
                 learned_something = true;
                 learned_string += "[color=" + this.Const.UI.Color.PositiveValue + "]+1[/color] " + statName + ", ";
             };
-
-            local modifier = ::ScalingAvatar.StatRollModification;
-            local modifierStar = ::ScalingAvatar.StatRollModifierPerStar;
-
-            local modifier_hitpoints = modifier + modifierStar * talents[this.Const.Attributes.Hitpoints];
-            local modifier_resolve = modifier + modifierStar * talents[this.Const.Attributes.Bravery];
-            local modifier_fatigue = modifier + modifierStar * talents[this.Const.Attributes.Stamina];
-            local modifier_melee_attack = modifier + modifierStar * talents[this.Const.Attributes.MeleeAtack];
-            local modifier_ranged_attack = modifier + modifierStar * talents[this.Const.Attributes.RangedAttack];
-            local modifier_melee_defense = modifier + modifierStar * talents[this.Const.Attributes.MeleeDefense];
-            local modifier_ranged_defense = modifier + modifierStar * talents[this.Const.Attributes.RangedDefense];
-            local modifier_initiative = modifier + modifierStar * talents[this.Const.Attributes.Initiative];
 
             roll_handler("Hitpoints", "Hitpoints", "HitpointsGained", success_roll_hitpoints, modifier_hitpoints);
             roll_handler("Bravery", "Resolve", "BraveryGained", success_roll_resolve, modifier_resolve);
