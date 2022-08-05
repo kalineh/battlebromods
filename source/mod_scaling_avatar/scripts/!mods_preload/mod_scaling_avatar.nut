@@ -48,7 +48,8 @@
 ::ScalingAvatar <- {
     ID = "mod_scaling_avatar",
     Name = "ScalingAvatar",
-    Version = "0.0.2",
+    Version = "0.0.3",
+
     StatRollPercent = 25,
     StatRollPercentPerStar = 10,
     StatRollModifier = 0,
@@ -64,21 +65,6 @@
 
         ::ScalingAvatar.Mod.Debug.printLog("ScalingAvatar: " + str, "debug");
     },
-
-    VerboseLogRoll = function(str, roll, chance) {
-        if (::ScalingAvatar.VerboseLogging == false)
-            return;
-
-        local result_str = "failure";
-        if (roll < chance)
-            result_str = "success";
-
-        local text = "ScalingAvatar: " + str + " (rolled " + roll + " with chance " + chance + "% (" + result_str + ")";
-
-        ::ScalingAvatar.Mod.Debug.printLog(text, "debug");
-        this.Tactical.EventLog.log(text);
-    },
-
 
     ReadStatTag = function(o, tagName) {
         return o.getContainer().getActor().getLifetimeStats().Tags.getAsInt(tagName);
@@ -110,44 +96,60 @@
 
     // MSU options setup
 
+    ReadSettingsFromMSU = function() {
+        if (::MSU.hasSetting("StatRollPercent")) ::ScalingAvatar.StatRollPercent = ::MSU.getSetting("StatRollPercent").tointeger();
+        if (::MSU.hasSetting("StatRollPercentPerStar")) ::ScalingAvatar.StatRollPercentPerStar = ::MSU.GetSetting("StatRollPercentPerStar").tointeger();
+        if (::MSU.hasSetting("StatRollModifier")) ::ScalingAvatar.StatRollModifier = ::MSU.GetSetting("StatRollModifier").tointeger();
+        if (::MSU.hasSetting("StatRollModifierPerStar")) ::ScalingAvatar.StatRollModifierPerStar = ::MSU.GetSetting("StatRollModifierPerStar").tointeger();
+        if (::MSU.hasSetting("ToggleSeperateStatRoll")) ::ScalingAvatar.ToggleSeperateStatRoll = ::MSU.GetSetting("ToggleSeperateStatRoll").tointeger() != 0;
+        if (::MSU.hasSetting("PerkRollPercent")) ::ScalingAvatar.PerkRollPercent = ::MSU.GetSetting("PerkRollPercent").tointeger();
+        if (::MSU.hasSetting("PerkRollPercentPerLevelDifference")) ::ScalingAvatar.PerkRollPercentPerLevelDifference = ::MSU.GetSetting("PerkRollPercentPerLevelDifference").tointeger();
+        if (::MSU.hasSetting("VerboseLogging")) ::ScalingAvatar.VerboseLogging = ::MSU.GetSetting("VerboseLogging").tointeger() != 0;
+    };
+
+    ReadSettingsFromMSU();
+
     local page = ::ScalingAvatar.Mod.ModSettings.addPage("General");
 
     //function addRangeSetting( _id, _value, _min, _max, _step, _name = null, _description = null )
 
-    page.addTitle("Presets");
-    page.addButtonSetting("PresetBalanced", "Balanced", null, "Balance preset for eventually powerful avatar but not too extreme").addCallback(function(_value) {
-        ::ScalingAvatar.StatRollPercent = 25,
-        ::ScalingAvatar.StatRollPercentPerStar = 10,
-        ::ScalingAvatar.StatRollModifier = 0,
-        ::ScalingAvatar.StatRollModifierPerStar = -5,
-        ::ScalingAvatar.PerkRollPercent = 25,
-        ::ScalingAvatar.PerkRollPercentPerLevelDifference = 5,
+    page.addTitle("Presets", "Presets");
+    page.addButtonSetting("PresetBalanced", "Balanced", "Balanced", "Balance preset for eventually powerful avatar but not too extreme.").addCallback(function() {
+        ::ScalingAvatar.VerboseLogDebug("setting preset balanced...");
+        ::ScalingAvatar.StatRollPercent = 25;
+        ::ScalingAvatar.StatRollPercentPerStar = 10;
+        ::ScalingAvatar.StatRollModifier = 0;
+        ::ScalingAvatar.StatRollModifierPerStar = -5;
+        ::ScalingAvatar.PerkRollPercent = 25;
+        ::ScalingAvatar.PerkRollPercentPerLevelDifference = 5;
     });
-    page.addButtonSetting("PresetStrong", "Strong", null, "Faster scaling and higher limits, for a very strong avatar.").addCallback(function(_value) {
-        ::ScalingAvatar.StatRollPercent = 50,
-        ::ScalingAvatar.StatRollPercentPerStar = 15,
-        ::ScalingAvatar.StatRollModifier = -15,
-        ::ScalingAvatar.StatRollModifierPerStar = -5,
-        ::ScalingAvatar.PerkRollPercent = 50,
-        ::ScalingAvatar.PerkRollPercentPerLevelDifference = 10,
+    page.addButtonSetting("PresetStrong", "Strong", "Strong", "Faster scaling and higher limits, for a very strong avatar.").addCallback(function() {
+        ::ScalingAvatar.VerboseLogDebug("setting preset strong...");
+        ::ScalingAvatar.StatRollPercent = 50;
+        ::ScalingAvatar.StatRollPercentPerStar = 15;
+        ::ScalingAvatar.StatRollModifier = -15;
+        ::ScalingAvatar.StatRollModifierPerStar = -5;
+        ::ScalingAvatar.PerkRollPercent = 50;
+        ::ScalingAvatar.PerkRollPercentPerLevelDifference = 10;
     });
-    page.addButtonSetting("PresetBeggar", "Beggar", null, "Simple 100% rolls, same as standard Scaling Beggar").addCallback(function(_value) {
-        ::ScalingAvatar.StatRollPercent = 100,
-        ::ScalingAvatar.StatRollPercentPerStar = 0,
-        ::ScalingAvatar.StatRollModifier = 0,
-        ::ScalingAvatar.StatRollModifierPerStar = 0,
-        ::ScalingAvatar.PerkRollPercent = 100,
-        ::ScalingAvatar.PerkRollPercentPerLevelDifference = 0,
+    page.addButtonSetting("PresetBeggar", "Beggar", "Beggar", "Simple 100% rolls, same as standard Scaling Beggar.").addCallback(function() {
+        ::ScalingAvatar.VerboseLogDebug("setting preset beggar...");
+        ::ScalingAvatar.StatRollPercent = 100;
+        ::ScalingAvatar.StatRollPercentPerStar = 0;
+        ::ScalingAvatar.StatRollModifier = 0;
+        ::ScalingAvatar.StatRollModifierPerStar = 0;
+        ::ScalingAvatar.PerkRollPercent = 100;
+        ::ScalingAvatar.PerkRollPercentPerLevelDifference = 0;
     });
 
     page.addDivider("Stats");
-    page.addTitle("Stats");
+    page.addTitle("Stats", "Stats");
 
-    local settingStat = page.addRangeSetting("StatRollPercent", 25, 0, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
-    local settingStatPerStar = page.addRangeSetting("StatRollPercentPerStar", 10, 0, 100, 1.0, "Stat Roll Percent Per Star", "Extra gain chance per talent star.");
-    local settingStatModifier = page.addRangeSetting("StatRollModifier", -10, -100, 100, 1.0, "Stat Roll Modifier", "Extra difference between stats check (lower means easier gain).");
-    local settingStatModifierPerStar = page.addRangeSetting("StatRollModifierPerStar", -5, -100, 100, 1.0, "Stat Roll Modifier Per Star", "Extra difference between stats check per star.");
-    local settingSeperate = page.addBooleanSetting("ToggleSeperateStatRoll", false, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
+    local settingStat = page.addRangeSetting("StatRollPercent", ::ScalingAvatar.StatRollPercent, 0, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
+    local settingStatPerStar = page.addRangeSetting("StatRollPercentPerStar", ::ScalingAvatar.StatRollPercentPerStar, 0, 100, 1.0, "Stat Roll Percent Per Star", "Extra gain chance per talent star.");
+    local settingStatModifier = page.addRangeSetting("StatRollModifier", ::ScalingAvatar.StatRollModifier, -100, 100, 1.0, "Stat Roll Modifier", "Extra difference between stats check (lower means easier gain).");
+    local settingStatModifierPerStar = page.addRangeSetting("StatRollModifierPerStar", ::ScalingAvatar.StatRollModifierPerStar, -100, 100, 1.0, "Stat Roll Modifier Per Star", "Extra difference between stats check per star.");
+    local settingSeperate = page.addBooleanSetting("ToggleSeperateStatRoll", ::ScalingAvatar.ToggleSeperateStatRoll, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
 
     settingStat.addCallback(function(_value) { ::ScalingAvatar.StatRollPercent = _value; });
     settingStatPerStar.addCallback(function(_value) { ::ScalingAvatar.StatRollPercentPerStar = _value; });
@@ -156,16 +158,16 @@
     settingSeperate.addCallback(function(_value) { ::ScalingAvatar.ToggleSeperateStatRoll = _value; });
 
     page.addDivider("Perks");
-    page.addTitle("Perks");
+    page.addTitle("Perks", "Perks");
 
-    local settingPerk = page.addRangeSetting("PerkRollPercent", 1, 25, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
-    local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", 1, 5, 100, 1.0, "Perk Roll Percent Per Level Difference", "Chance increase for each level target is above.");
+    local settingPerk = page.addRangeSetting("PerkRollPercent", ::ScalingAvatar.PerkRollPercent, 0, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
+    local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", ::ScalingAvatar.PerkRollPercentPerLevelDifference, 0, 100, 1.0, "Perk Roll Percent Per Level Difference", "Chance increase for each level target is above.");
 
     settingPerk.addCallback(function(_value) { ::ScalingAvatar.PerkRollPercent = _value; });
     settingPerkPerLevelDifference.addCallback(function(_value) { ::ScalingAvatar.PerkRollPercentPerLevelDifference = _value; });
 
     page.addDivider("Debug");
-    page.addTitle("Debug Settings");
+    page.addTitle("DebugSettings", "Debug Settings");
 
     local settingVerbose = page.addBooleanSetting("VerboseLogging", false, "Verbose Logging", "Verbose logging for debugging.");
 
@@ -262,13 +264,15 @@
 
             ::ScalingAvatar.VerboseLogDebug("rolling for stat increase...");
 
-            local roll_result_str = function(rolLResult, statResult)
-            {
-                if (rollResult == false) return "failed roll";
-                if (statResult == false) return "failed stat check";
-                return "success";
-            }
             local roll_handler = function(internalStatName, statName, statTagName, roll, chance, statModifier) {
+
+                local roll_result_str = function(rollResult, statResult)
+                {
+                    if (rollResult == false) return "failed roll";
+                    if (statResult == false) return "failed stat check";
+                    return "success";
+                };
+            
                 local stat_self = actorProps[internalStatName];
                 local stat_self_modified = stat_self + statModifier;
                 local stat_target = targetProps[internalStatName];
@@ -277,7 +281,7 @@
 
                 if (::ScalingAvatar.VerboseLogging)
                 {
-                    local text = "ScalingAvatar: rolling " + statName + ": " + roll + " vs " + chance + "% (" + roll_result_str(roll_result, stat_result) + ")";
+                    local text = "rolling " + statName + ": " + roll + " vs " + chance + "% (" + roll_result_str(roll_result, stat_result) + ") (raw: " + stat_self + ", mod: " + stat_self_modified + " vs " + stat_target + ")";
                     ::ScalingAvatar.Mod.Debug.printLog(text, "debug");
                     this.Tactical.EventLog.log(text);
                 }
@@ -317,12 +321,25 @@
 
         local scalingAvatarOnTargetKilledPerks = function(_targetEntity, _skill) {
             local actor = this.getContainer().getActor();
+            local actor_level = actor.getLevel();
+            local target_level = _targetEntity.getLevel();
+            local level_difference = this.Math.max(target_level - actor_level, 0);
 
             local scaling_roll_perk = Math.rand(0, 100);
-            local success_roll_perk = scaling_roll_perk < ::ScalingAvatar.PerkRollPercent;
+            local scaling_roll_perk_chance = ::ScalingAvatar.PerkRollPercent
+            local success_roll_perk = scaling_roll_perk < scaling_roll_perk_chance;
 
             ::ScalingAvatar.VerboseLogDebug("rolling for perk increase...");
-            ::ScalingAvatar.VerboseLogRoll("perk", scaling_roll_perk, ::ScalingAvatar.PerkRollPercent);
+
+            if (::ScalingAvatar.VerboseLogging)
+            {
+                local result_str_perk = "failure";
+                if (success_roll_perk)
+                    result_str_perk = "success";
+                local text = "ScalingAvatar: rolling perk: " + scaling_roll_perk + " vs " + scaling_roll_perk_chance + "% (" + result_str_perk + ")";
+                ::ScalingAvatar.Mod.Debug.printLog(text, "debug");
+                this.Tactical.EventLog.log(text);
+            }
 
             if (success_roll_perk == false)
                 return;

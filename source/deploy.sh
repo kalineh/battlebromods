@@ -1,5 +1,5 @@
 #!/bin/bash
-OUTPUT_FILENAME=mod_scaling_avatar-0-0-2.zip
+OUTPUT_FILENAME=mod_scaling_avatar-0-0-3.zip
 rm mod_scaling_avatar*.zip
 pushd mod_scaling_avatar
 7z a $OUTPUT_FILENAME .
