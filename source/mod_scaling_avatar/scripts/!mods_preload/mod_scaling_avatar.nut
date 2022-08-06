@@ -50,6 +50,8 @@
     Name = "ScalingAvatar",
     Version = "0.0.3",
 
+    Settings = { },
+
     VerboseLogging = true,
 
     VerboseLogDebug = function(str) {
@@ -132,8 +134,8 @@
     page.addDivider("Perks");
     page.addTitle("Perks", "Perks");
 
-    local settingPerk = page.addRangeSetting("PerkRollPercent", ::ScalingAvatar.PerkRollPercent, 0, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
-    local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", ::ScalingAvatar.PerkRollPercentPerLevelDifference, 0, 100, 1.0, "Perk Roll Percent Per Level Difference", "Chance increase for each level target is above.");
+    local settingPerk = page.addRangeSetting("PerkRollPercent", 25, 0, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
+    local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", 5, 0, 100, 1.0, "Perk Roll Percent Per Level Difference", "Chance increase for each level target is above.");
 
     page.addDivider("Debug");
     page.addTitle("DebugSettings", "Debug Settings");
@@ -142,15 +144,17 @@
 
     settingVerbose.addCallback(function(_value) { ::ScalingAvatar.VerboseLogging = _value; });
 
-    ::ScalingAvatar.Settings = {
-        StatRollPercent = ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercent"),
-        StatRollPercentPerStar = ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercentPerStar"),
-        StatRollModifier = ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifier"),
-        StatRollModifierPerStar = ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifierPerStar"),
-        StatRollPerStatRolls = ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPerStatRolls"),
-        PerkRollPercent = ::ScalingAvatar.Mod.ModSettings.getSetting("PerkRollPercent"),
-        PerkRollPercentPerLevelDifference = ::ScalingAvatar.Mod.ModSettings.getSetting("PerkRollPercentPerLevelDifference"),
-    };
+    ::ScalingAvatar.Settings.StatRollPercent <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercent"),
+    ::ScalingAvatar.Settings.StatRollPercentPerStar <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercentPerStar"),
+    ::ScalingAvatar.Settings.StatRollModifier <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifier"),
+    ::ScalingAvatar.Settings.StatRollModifierPerStar <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifierPerStar"),
+    ::ScalingAvatar.Settings.StatRollPerStatRolls <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPerStatRolls"),
+    ::ScalingAvatar.Settings.PerkRollPercent <- ::ScalingAvatar.Mod.ModSettings.getSetting("PerkRollPercent"),
+    ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference <- ::ScalingAvatar.Mod.ModSettings.getSetting("PerkRollPercentPerLevelDifference"),
+
+    ::ScalingAvatar.Mod.Debug.printLog("initalized msu with settings:", "debug");
+    foreach (k,v in ::ScalingAvatar.Settings)
+        ::ScalingAvatar.Mod.Debug.printLog("> " + k + " = " + v, "debug");
 
     ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
 
@@ -216,7 +220,7 @@
             local talents = actor.getTalents();
 
             local pct = ::ScalingAvatar.Settings.StatRollPercent.getValue().tointeger();
-            local pctStar = ::ScalingAvatar.Settings.StatRollPercentPerStar.getvalue().tointeger();
+            local pctStar = ::ScalingAvatar.Settings.StatRollPercentPerStar.getValue().tointeger();
 
             local chance_hitpoints = pct + pctStar * talents[this.Const.Attributes.Hitpoints];
             local chance_resolve = pct + pctStar * talents[this.Const.Attributes.Bravery];
