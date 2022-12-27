@@ -170,15 +170,17 @@
         ::ScalingAvatar.Mod.Debug.printLog("> " + k + " = " + v, "debug");
 
     ::mods_hookExactClass("skills/traits/player_character_trait", function(o) {
-        local base_onUpdate = ::mods_getMember(o, "onUpdate");
-        ::mods_override(o, "onUpdate", function() {
-            base_onUpdate();
+        local base_onAdded = ::mods_getMember(o, "onAdded");
+        ::mods_override(o, "onAdded", function() {
+            base_onAdded();
 
-            if (this.hasSkill("trait.scaling_avatar") == false)
+            local actor = this.getContainer().getActor();
+            local skills = actor.getSkills();
+
+            if (skills.hasSkill("trait.scaling_avatar") == false)
             {
                 ::ScalingAvatar.VerboseLogDebug("adding scaling avatar trait to player character...");
-                // TODO: not sure what path to use here
-                this.addSkill(this.new("scripts/skills/traits/mod_scaling_avatar_trait"));
+                skills.add(this.new("scripts/skills/traits/mod_scaling_avatar_trait"));
             }
         });
     });

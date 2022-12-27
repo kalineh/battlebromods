@@ -1,20 +1,20 @@
-this.scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/character_trait", {
-	m = {},
+this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/character_trait", {
+	m = { },
 	function create()
 	{
 		this.character_trait.create();
 		this.m.ID = "trait.scaling_avatar_bro";
-		this.m.Name = "Scaling Avatar Bro";
-		this.m.Icon = "ui/traits/trait_icon_17.png";
-		this.m.Description = "Gains some effects from Scaling Avatar leader.";
+		this.m.Name = "Scaling Avatar (Bro)";
+		this.m.Icon = "ui/traits/trait_icon_19.png";
+		this.m.Description = "Gains perks and stats from enemy kills (bro edition).";
 		this.m.Titles = [
 		];
 		this.m.Excluded = [
 		];
 	}
 
-    function getTooltip()
-    {
+	function getTooltip()
+	{
         local actor = this.getContainer().getActor();
         local stats = ::ScalingAvatar.ReadStatTags(this);
         local results = [ ];
@@ -24,7 +24,7 @@ this.scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/character_t
         };
 
         local chanceText = "";
-        if (this.m.ID = "trait.scaling_avatar_bro")
+        if (this.m.ID == "trait.scaling_avatar_bro")
             chanceText = " (" + ::ScalingAvatar.Settings.ApplyToBroRate + "% rate)";
 
         results.append({ id = 1, type = "title", text = this.getName(), });
@@ -40,24 +40,24 @@ this.scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/character_t
         results.append({ id = 10, type = "text", icon = "ui/icons/ranged_defense.png", text = format_text("Ranged Defense", stats.RangedDefenseGained), });
 
         return results;
-    }
+	}
 
-    function onUpdate( _properties )
-    {
-        local stats = ::ScalingAvatar.ReadStatTags(this);
+	function onUpdate( _properties )
+	{
+		local stats = ::ScalingAvatar.ReadStatTags(this);
 
-        _properties.Hitpoints += stats.HitpointsGained;
-        _properties.Bravery += stats.BraveryGained;
-        _properties.Stamina += stats.StaminaGained;
-        _properties.Initiative += stats.InitiativeGained;
-        _properties.MeleeSkill += stats.MeleeSkillGained;
-        _properties.RangedSkill += stats.RangedSkillGained;
-        _properties.MeleeDefense += stats.MeleeDefenseGained;
-        _properties.RangedDefense += stats.RangedDefenseGained;
-    }
+		_properties.Hitpoints += stats.HitpointsGained;
+		_properties.Bravery += stats.BraveryGained;
+		_properties.Stamina += stats.StaminaGained;
+		_properties.Initiative += stats.InitiativeGained;
+		_properties.MeleeSkill += stats.MeleeSkillGained;
+		_properties.RangedSkill += stats.RangedSkillGained;
+		_properties.MeleeDefense += stats.MeleeDefenseGained;
+		_properties.RangedDefense += stats.RangedDefenseGained;
+	}
 
-    function onTargetKilled( _targetEntity, _skill )
-    {
+	function onTargetKilled( _targetEntity, _skill )
+	{
         local actor = this.getContainer().getActor();
         local background = actor.getBackground().getID();
 
@@ -77,7 +77,7 @@ this.scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/character_t
 
         scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
         scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
-    }
+	}
 
     function scalingAvatarOnTargetKilledStats(_targetEntity, _skill)
     {

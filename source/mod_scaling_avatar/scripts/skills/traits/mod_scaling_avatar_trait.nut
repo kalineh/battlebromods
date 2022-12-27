@@ -1,5 +1,5 @@
-this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait", {
-	m = {},
+this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait", {
+	m = { },
 	function create()
 	{
 		this.character_trait.create();
@@ -24,7 +24,7 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
         };
 
         local chanceText = "";
-        if (this.m.ID = "trait.scaling_avatar_bro")
+        if (this.m.ID == "trait.scaling_avatar_bro")
             chanceText = " (" + ::ScalingAvatar.Settings.ApplyToBroRate + "% rate)";
 
         results.append({ id = 1, type = "title", text = this.getName(), });
@@ -39,8 +39,49 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
         results.append({ id = 10, type = "text", icon = "ui/icons/melee_defense.png", text = format_text("Melee Defense", stats.MeleeDefenseGained), });
         results.append({ id = 10, type = "text", icon = "ui/icons/ranged_defense.png", text = format_text("Ranged Defense", stats.RangedDefenseGained), });
 
+        addTraitToBros();
+
         return results;
 	}
+
+    function addTraitToBros()
+    {
+        ::ScalingAvatar.VerboseLogDebug("adding trait to bros...");
+
+        if (this.m.ID == "trait.scaling_avatar")
+        {
+            local brothers = this.World.getPlayerRoster().getAll();
+            local roster = [];
+
+            ::ScalingAvatar.VerboseLogDebug("checking roster " + brothers);
+
+            foreach (bro in brothers)
+            {
+                ::ScalingAvatar.VerboseLogDebug("checking bro " + bro);
+
+                local skills = bro.getSkills();
+
+                if (skills.hasSkill("trait.scaling_avatar"))
+                {
+                    ::ScalingAvatar.VerboseLogDebug("skip, has scaling avatar");
+                    continue;
+                }
+                if (skills.hasSkill("trait.scaling_avatar_bro"))
+                {
+                    ::ScalingAvatar.VerboseLogDebug("skip, has scaling avatar bro");
+                    continue;
+                }
+
+                //::ScalingAvatar.VerboseLogDebug("adding scaling avatar bro trait to bro " + b.getName());
+                ::ScalingAvatar.VerboseLogDebug("adding scaling avatar bro trait to bro " + bro);
+                skills.add(this.new("scripts/skills/traits/mod_scaling_avatar_bro_trait"));
+            }
+        }
+        else
+        {
+            ::ScalingAvatar.VerboseLogDebug("not scaling avatar " + this.m.ID);
+        }
+    }
 
 	function onUpdate( _properties )
 	{
@@ -54,6 +95,8 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
 		_properties.RangedSkill += stats.RangedSkillGained;
 		_properties.MeleeDefense += stats.MeleeDefenseGained;
 		_properties.RangedDefense += stats.RangedDefenseGained;
+
+        addTraitToBros();
 	}
 
 	function onTargetKilled( _targetEntity, _skill )
