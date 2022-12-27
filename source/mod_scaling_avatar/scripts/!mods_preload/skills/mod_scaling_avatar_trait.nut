@@ -44,7 +44,7 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
 
 	function onUpdate( _properties )
 	{
-		var stats = ::ScalingAvatar.ReadStatTags(this);
+		local stats = ::ScalingAvatar.ReadStatTags(this);
 
 		_properties.Hitpoints += stats.HitpointsGained;
 		_properties.Bravery += stats.BraveryGained;
@@ -79,7 +79,8 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
         scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
 	}
 
-    local scalingAvatarOnTargetKilledStats = function(_targetEntity, _skill) {
+    function scalingAvatarOnTargetKilledStats(_targetEntity, _skill)
+    {
         local actor = this.getContainer().getActor();
         local actorProps = actor.getBaseProperties();
         local targetProps = _targetEntity.getBaseProperties();
@@ -190,9 +191,10 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
         if (learned_something) {
             this.Tactical.EventLog.log(actor.getName() + " has acquired new attributes: " + learned_string);
         }
-    };
+    }
 
-    local scalingAvatarOnTargetKilledPerks = function(_targetEntity, _skill) {
+    function scalingAvatarOnTargetKilledPerks (_targetEntity, _skill)
+    {
         local actor = this.getContainer().getActor();
         local actor_level = actor.getLevel();
         local target_level = _targetEntity.getLevel();
@@ -245,29 +247,11 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
                     foreach(i, row in actor.getBackground().getPerkTree()) {
                         if (row.len() < length) rowToAddPerk = i;
                     }
-                    actor.getBackground().addPerk(i, rowToAddPerk, refundable: false);
+                    actor.getBackground().addPerk(i, rowToAddPerk);
                     break;
                 }
             }
         }
-    };
-
-    local base_onTargetKilled = ::mods_getMember(o, "onTargetKilled");
-    ::mods_override(o, "onTargetKilled", function(_targetEntity, _skill) {
-        base_onTargetKilled(_targetEntity, _skill);
-
-        local actor = this.getContainer().getActor();
-        local background = actor.getBackground().getID();
-
-        if (background == "background.legend_commander_beggar_op")
-        {
-            ::ScalingAvatar.VerboseLogDebug("skipping because already scaling beggar...");
-            return;
-        }
-
-        scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
-        scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
-    });
-
+    }
 });
 

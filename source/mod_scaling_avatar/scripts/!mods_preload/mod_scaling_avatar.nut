@@ -9,6 +9,9 @@
 // 0.0.3
 // - fix some settings not being applied
 // - added new perk level diff scaling
+// 0.0.4
+// - refactored into seperate trait
+// - added passing on trait to bros
 
 // TODO:
 // - convert to trait instead
@@ -49,7 +52,7 @@
 ::ScalingAvatar <- {
     ID = "mod_scaling_avatar",
     Name = "ScalingAvatar",
-    Version = "0.0.3",
+    Version = "0.0.4",
 
     Settings = { },
 
@@ -141,7 +144,7 @@
     local settingPerk = page.addRangeSetting("PerkRollPercent", 25, 0, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
     local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", 5, 0, 100, 1.0, "Perk Roll Percent Per Level Difference", "Chance increase for each level target is above.");
 
-    page.addDivider("Bro Rate");
+    page.addDivider("BroRate");
     page.addTitle("ApplyToBroRate", "Apply To Bro Rate");
 
     local settingApplyToBroRate = page.addRangeSetting("ApplyToBroRate", 5, 0, 100, 1.0, "Apply to Bro Rate", "Amount to apply the same effect to other Bros");
