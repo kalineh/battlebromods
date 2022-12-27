@@ -44,7 +44,7 @@ this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait
 
 	function onUpdate( _properties )
 	{
-		local smod_scaling_avatar_traittats = ::ScalingAvatar.ReadStatTags(this);
+		local stats = ::ScalingAvatar.ReadStatTags(this);
 
 		_properties.Hitpoints += stats.HitpointsGained;
 		_properties.Bravery += stats.BraveryGained;
