@@ -25,7 +25,7 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
 
         local chanceText = "";
         if (this.m.ID == "trait.scaling_avatar_bro")
-            chanceText = " (" + ::ScalingAvatar.Settings.ApplyToBroRate + "% rate)";
+            chanceText = " (" + ::ScalingAvatar.Settings.ApplyToBroRate.getValue().tointeger() + "% rate)";
 
         results.append({ id = 1, type = "title", text = this.getName(), });
         results.append({ id = 2, type = "description", text = this.getDescription() + chanceText, });
@@ -67,16 +67,18 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
             return;
         }
 
-        local rollChance = 100;
+        local rollChance = ::ScalingAvatar.Settings.ApplyToBroRate.getValue().tointeger();
 
-        if (this.m.ID = "trait.scaling_avatar_bro")
+        local bro_roll = Math.rand(0, 100);
+
+        ::ScalingAvatar.VerboseLogDebug("rolled avatar bro " + bro_roll_stat + " vs " + rollChance + "%");
+        ::ScalingAvatar.VerboseLogDebug("rolled perk " + bro_roll_perk + " vs " + rollChance + "%");
+
+        if (bro_roll_stat > rollChance)
         {
-            rollChance = ::ScalingAvatar.Settings.ApplyToBroRate;
+            scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
+            scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
         }
-
-
-        scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
-        scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
 	}
 
     function scalingAvatarOnTargetKilledStats(_targetEntity, _skill)

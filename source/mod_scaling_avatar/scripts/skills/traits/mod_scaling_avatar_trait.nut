@@ -110,14 +110,6 @@ this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_t
             return;
         }
 
-        local rollChance = 100;
-
-        if (this.m.ID = "trait.scaling_avatar_bro")
-        {
-            rollChance = ::ScalingAvatar.Settings.ApplyToBroRate;
-        }
-
-
         scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
         scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
 	}
