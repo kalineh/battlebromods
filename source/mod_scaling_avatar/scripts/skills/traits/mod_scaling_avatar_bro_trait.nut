@@ -1,4 +1,4 @@
-this.scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_trait", {
+this.scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/character_trait", {
 	m = {},
 	function create()
 	{
