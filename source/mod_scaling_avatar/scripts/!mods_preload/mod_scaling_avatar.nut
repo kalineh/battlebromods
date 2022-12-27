@@ -177,6 +177,7 @@
             if (this.hasSkill("trait.scaling_avatar") == false)
             {
                 ::ScalingAvatar.VerboseLogDebug("adding scaling avatar trait to player character...");
+                // TODO: not sure what path to use here
                 this.addSkill(this.new("scripts/skills/traits/mod_scaling_avatar_trait"));
             }
         });
