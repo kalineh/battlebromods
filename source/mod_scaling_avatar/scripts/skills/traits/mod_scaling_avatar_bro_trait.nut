@@ -71,10 +71,9 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
 
         local bro_roll = Math.rand(0, 100);
 
-        ::ScalingAvatar.VerboseLogDebug("rolled avatar bro " + bro_roll_stat + " vs " + rollChance + "%");
-        ::ScalingAvatar.VerboseLogDebug("rolled perk " + bro_roll_perk + " vs " + rollChance + "%");
+        ::ScalingAvatar.VerboseLogDebug("rolled bro bonus " + bro_roll + " vs " + rollChance + "%");
 
-        if (bro_roll_stat > rollChance)
+        if (bro_roll > rollChance)
         {
             scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
             scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
