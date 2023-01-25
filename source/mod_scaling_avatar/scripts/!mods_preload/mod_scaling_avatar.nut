@@ -83,9 +83,9 @@
     },
 
     CalculateLevelDifference = function(bro, actor) {
-        var powerBro = bro.getLevel();
-        var powerActor = actor.getXPValue() / 50;
-        var delta = powerActor - powerBro;
+        local powerBro = bro.getLevel();
+        local powerActor = actor.getXPValue() / 50;
+        local delta = powerActor - powerBro;
 
         if (delta < 0)
             return 0;
@@ -154,6 +154,7 @@
 
     local settingStat = page.addRangeSetting("StatRollPercent", 25, 0, 100, 1.0, "Stat Roll Percent", "Chance of gaining stats from killed enemy.");
     local settingStatPerStar = page.addRangeSetting("StatRollPercentPerStar", 10, 0, 100, 1.0, "Stat Roll Percent Per Star", "Extra gain chance per talent star.");
+    local settingStatPerLevelDifference = page.addRangeSetting("StatRollPercentPerLevelDifference", 10, 0, 100, 1.0, "Stat Roll Percent Per Level Difference", "Extra gain chance per level difference");
     local settingStatModifier = page.addRangeSetting("StatRollModifier", 0, -100, 100, 1.0, "Stat Roll Modifier", "Extra difference between stats check (lower means easier gain).");
     local settingStatModifierPerStar = page.addRangeSetting("StatRollModifierPerStar", -5, -100, 100, 1.0, "Stat Roll Modifier Per Star", "Extra difference between stats check per star.");
     local settingStatModifierPerLevelDifference = page.addRangeSetting("StatRollModifierPerLevelDifference", -5, -100, 100, 1.0, "Stat Roll Modifier Per Level Difference", "Extra difference between stats check per level difference.");

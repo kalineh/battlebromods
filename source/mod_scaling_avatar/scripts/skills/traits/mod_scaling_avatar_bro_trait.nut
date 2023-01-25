@@ -80,7 +80,7 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
             scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
         }
 	}
-    
+
     function scalingAvatarOnTargetKilledStats(_targetEntity, _skill)
     {
         local actor = this.getContainer().getActor();
@@ -207,7 +207,7 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
         local level_difference = ::ScalingAvatar.CalculateLevelDifference(actor, _targetEntity);
 
         local scaling_roll_perk = Math.rand(0, 100);
-        local scaling_roll_perk_chance = ::ScalingAvatar.Settings.PerkRollPercent.getValue().tointeger() + ::ScalingAvatar.Settings.PerRollPercentPerLevelDifference.getValue().tointeger() * level_difference;
+        local scaling_roll_perk_chance = ::ScalingAvatar.Settings.PerkRollPercent.getValue().tointeger() + ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.getValue().tointeger() * level_difference;
         local success_roll_perk = scaling_roll_perk < scaling_roll_perk_chance;
 
         ::ScalingAvatar.VerboseLogDebug("rolling for perk increase...");
