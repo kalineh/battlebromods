@@ -5,7 +5,7 @@ this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_t
 		this.character_trait.create();
 		this.m.ID = "trait.scaling_avatar";
 		this.m.Name = "Scaling Avatar";
-		this.m.Icon = "ui/traits/trait_icon_17.png";
+		this.m.Icon = "ui/traits/trait_icon_63.png";
 		this.m.Description = "Gains perks and stats from enemy kills.";
 		this.m.Titles = [
 		];
@@ -120,6 +120,10 @@ this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_t
         local actorProps = actor.getBaseProperties();
         local targetProps = _targetEntity.getBaseProperties();
 
+        local levelDifference = ::ScalingAvatar.CalculateLevelDifference(actor, _targetEntity)
+
+        ::ScalingAvatar.VerboseLogDebug("LEVEL DIFFERENCE: " + levelDifference);
+
         local learned_something = false;
         local learned_string = "";
 
@@ -149,27 +153,29 @@ this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_t
 
         local pct = ::ScalingAvatar.Settings.StatRollPercent.getValue().tointeger();
         local pctStar = ::ScalingAvatar.Settings.StatRollPercentPerStar.getValue().tointeger();
+        local pctLevelDifference = ::ScalingAvatar.Settings.StatRollPercentPerLevelDifference.getValue().tointeger();
 
-        local chance_hitpoints = pct + pctStar * talents[this.Const.Attributes.Hitpoints];
-        local chance_resolve = pct + pctStar * talents[this.Const.Attributes.Bravery];
-        local chance_fatigue = pct + pctStar * talents[this.Const.Attributes.Fatigue];
-        local chance_melee_attack = pct + pctStar * talents[this.Const.Attributes.MeleeSkill];
-        local chance_ranged_attack = pct + pctStar * talents[this.Const.Attributes.RangedSkill];
-        local chance_melee_defense = pct + pctStar * talents[this.Const.Attributes.MeleeDefense];
-        local chance_ranged_defense = pct + pctStar * talents[this.Const.Attributes.RangedDefense];
-        local chance_initiative = pct + pctStar * talents[this.Const.Attributes.Initiative];
+        local chance_hitpoints = pct + pctStar * talents[this.Const.Attributes.Hitpoints] + pctLevelDifference * levelDifference;
+        local chance_resolve = pct + pctStar * talents[this.Const.Attributes.Bravery] + pctLevelDifference * levelDifference;
+        local chance_fatigue = pct + pctStar * talents[this.Const.Attributes.Fatigue] + pctLevelDifference * levelDifference;
+        local chance_melee_attack = pct + pctStar * talents[this.Const.Attributes.MeleeSkill] + pctLevelDifference * levelDifference;
+        local chance_ranged_attack = pct + pctStar * talents[this.Const.Attributes.RangedSkill] + pctLevelDifference * levelDifference;
+        local chance_melee_defense = pct + pctStar * talents[this.Const.Attributes.MeleeDefense] + pctLevelDifference * levelDifference;
+        local chance_ranged_defense = pct + pctStar * talents[this.Const.Attributes.RangedDefense] + pctLevelDifference * levelDifference;
+        local chance_initiative = pct + pctStar * talents[this.Const.Attributes.Initiative] + pctLevelDifference * levelDifference;
 
         local modifier = ::ScalingAvatar.Settings.StatRollModifier.getValue().tointeger();
         local modifierStar = ::ScalingAvatar.Settings.StatRollModifierPerStar.getValue().tointeger();
+        local modifierLevel = ::ScalingAvatar.Settings.StatRollModifierPerLevelDifference.getValue().tointeger();
 
-        local modifier_hitpoints = modifier + modifierStar * talents[this.Const.Attributes.Hitpoints];
-        local modifier_resolve = modifier + modifierStar * talents[this.Const.Attributes.Bravery];
-        local modifier_fatigue = modifier + modifierStar * talents[this.Const.Attributes.Fatigue];
-        local modifier_melee_attack = modifier + modifierStar * talents[this.Const.Attributes.MeleeSkill];
-        local modifier_ranged_attack = modifier + modifierStar * talents[this.Const.Attributes.RangedSkill];
-        local modifier_melee_defense = modifier + modifierStar * talents[this.Const.Attributes.MeleeDefense];
-        local modifier_ranged_defense = modifier + modifierStar * talents[this.Const.Attributes.RangedDefense];
-        local modifier_initiative = modifier + modifierStar * talents[this.Const.Attributes.Initiative];
+        local modifier_hitpoints = modifier + modifierStar * talents[this.Const.Attributes.Hitpoints] + modifierLevel * levelDifference;
+        local modifier_resolve = modifier + modifierStar * talents[this.Const.Attributes.Bravery] + modifierLevel * levelDifference;
+        local modifier_fatigue = modifier + modifierStar * talents[this.Const.Attributes.Fatigue] + modifierLevel * levelDifference;
+        local modifier_melee_attack = modifier + modifierStar * talents[this.Const.Attributes.MeleeSkill] + modifierLevel * levelDifference;
+        local modifier_ranged_attack = modifier + modifierStar * talents[this.Const.Attributes.RangedSkill] + modifierLevel * levelDifference;
+        local modifier_melee_defense = modifier + modifierStar * talents[this.Const.Attributes.MeleeDefense] + modifierLevel * levelDifference;
+        local modifier_ranged_defense = modifier + modifierStar * talents[this.Const.Attributes.RangedDefense] + modifierLevel * levelDifference;
+        local modifier_initiative = modifier + modifierStar * talents[this.Const.Attributes.Initiative] + modifierLevel * levelDifference;
 
         ::ScalingAvatar.VerboseLogDebug("rolling for stat increase...");
 
@@ -231,12 +237,10 @@ this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_t
     function scalingAvatarOnTargetKilledPerks (_targetEntity, _skill)
     {
         local actor = this.getContainer().getActor();
-        local actor_level = actor.getLevel();
-        local target_level = _targetEntity.getLevel();
-        local level_difference = this.Math.max(target_level - actor_level, 0);
+        local level_difference = ::ScalingAvatar.CalculateLevelDifference(actor, _targetEntity);
 
         local scaling_roll_perk = Math.rand(0, 100);
-        local scaling_roll_perk_chance = ::ScalingAvatar.Settings.PerkRollPercent.getValue().tointeger();
+        local scaling_roll_perk_chance = ::ScalingAvatar.Settings.PerkRollPercent.getValue().tointeger() + ::ScalingAvatar.Settings.PerRollPercentPerLevelDifference.getValue().tointeger() * level_difference;
         local success_roll_perk = scaling_roll_perk < scaling_roll_perk_chance;
 
         ::ScalingAvatar.VerboseLogDebug("rolling for perk increase...");

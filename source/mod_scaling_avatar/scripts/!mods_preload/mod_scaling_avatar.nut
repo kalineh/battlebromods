@@ -82,6 +82,17 @@
         };
     },
 
+    CalculateLevelDifference = function(bro, actor) {
+        var powerBro = bro.getLevel();
+        var powerActor = actor.getXPValue() / 50;
+        var delta = powerActor - powerBro;
+
+        if (delta < 0)
+            return 0;
+
+        return delta;
+    },
+
     IncrementStatTag = function(o, tagName) {
         o.getContainer().getActor().getLifetimeStats().Tags.increment(tagName);
     },
@@ -100,33 +111,42 @@
     page.addTitle("Presets", "Presets");
     page.addButtonSetting("PresetBalanced", "Balanced", "Balanced", "Balance preset for eventually powerful avatar but not too extreme.").addCallback(function() {
         ::ScalingAvatar.VerboseLogDebug("setting preset balanced...");
-        ::ScalingAvatar.Settings.StatRollPercent.set(25);
+        ::ScalingAvatar.Settings.StatRollPercent.set(20);
         ::ScalingAvatar.Settings.StatRollPercentPerStar.set(10);
+        ::ScalingAvatar.Settings.StatRollPercentPerLevelDifference.set(10);
         ::ScalingAvatar.Settings.StatRollModifier.set(0);
         ::ScalingAvatar.Settings.StatRollModifierPerStar.set(-5);
-        ::ScalingAvatar.Settings.PerkRollPercent.set(25);
-        ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.set(5);
+        ::ScalingAvatar.Settings.StatRollModifierPerLevelDifference.set(-5);
+        ::ScalingAvatar.Settings.PerkRollPercent.set(20);
+        ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.set(10);
         ::ScalingAvatar.Settings.ApplyToBroRate.set(5);
+        ::ScalingAvatar.Settings.ApplyToBroRatePerLevelDifference.set(5);
     });
     page.addButtonSetting("PresetStrong", "Strong", "Strong", "Faster scaling and higher limits, for a very strong avatar.").addCallback(function() {
         ::ScalingAvatar.VerboseLogDebug("setting preset strong...");
         ::ScalingAvatar.Settings.StatRollPercent.set(50);
         ::ScalingAvatar.Settings.StatRollPercentPerStar.set(15);
+        ::ScalingAvatar.Settings.StatRollPercentPerLevelDifference.set(15);
         ::ScalingAvatar.Settings.StatRollModifier.set(-15);
         ::ScalingAvatar.Settings.StatRollModifierPerStar.set(-5);
+        ::ScalingAvatar.Settings.StatRollModifierPerLevelDifference.set(-5);
         ::ScalingAvatar.Settings.PerkRollPercent.set(50);
-        ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.set(10);
-        ::ScalingAvatar.Settings.ApplyToBroRate.set(10);
+        ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.set(15);
+        ::ScalingAvatar.Settings.ApplyToBroRate.set(15);
+        ::ScalingAvatar.Settings.ApplyToBroRatePerLevelDifference.set(10);
     });
     page.addButtonSetting("PresetBeggar", "Beggar", "Beggar", "Simple 100% rolls, same as standard Scaling Beggar.").addCallback(function() {
         ::ScalingAvatar.VerboseLogDebug("setting preset beggar...");
         ::ScalingAvatar.Settings.StatRollPercent.set(100);
         ::ScalingAvatar.Settings.StatRollPercentPerStar.set(0);
+        ::ScalingAvatar.Settings.StatRollPercentPerLevelDifference.set(0);
         ::ScalingAvatar.Settings.StatRollModifier.set(0);
         ::ScalingAvatar.Settings.StatRollModifierPerStar.set(0);
+        ::ScalingAvatar.Settings.StatRollModifierPerLevelDifference.set(0);
         ::ScalingAvatar.Settings.PerkRollPercent.set(100);
         ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.set(0);
         ::ScalingAvatar.Settings.ApplyToBroRate.set(0);
+        ::ScalingAvatar.Settings.ApplyToBroRatePerLevelDifference.set(0);
     });
 
     page.addDivider("Stats");
@@ -136,18 +156,20 @@
     local settingStatPerStar = page.addRangeSetting("StatRollPercentPerStar", 10, 0, 100, 1.0, "Stat Roll Percent Per Star", "Extra gain chance per talent star.");
     local settingStatModifier = page.addRangeSetting("StatRollModifier", 0, -100, 100, 1.0, "Stat Roll Modifier", "Extra difference between stats check (lower means easier gain).");
     local settingStatModifierPerStar = page.addRangeSetting("StatRollModifierPerStar", -5, -100, 100, 1.0, "Stat Roll Modifier Per Star", "Extra difference between stats check per star.");
+    local settingStatModifierPerLevelDifference = page.addRangeSetting("StatRollModifierPerLevelDifference", -5, -100, 100, 1.0, "Stat Roll Modifier Per Level Difference", "Extra difference between stats check per level difference.");
     local settingSeperate = page.addBooleanSetting("StatRollPerStatRolls", true, "Seperate Stat Rolls", "Roll for stat gain per individual stat.");
 
     page.addDivider("Perks");
     page.addTitle("Perks", "Perks");
 
     local settingPerk = page.addRangeSetting("PerkRollPercent", 25, 0, 100, 1.0, "Perk Roll Percent", "Chance of gaining perks from killed enemy.");
-    local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", 5, 0, 100, 1.0, "Perk Roll Percent Per Level Difference", "Chance increase for each level target is above.");
+    local settingPerkPerLevelDifference = page.addRangeSetting("PerkRollPercentPerLevelDifference", 5, 0, 100, 1.0, "Perk Roll Percent Per Level Difference", "Bonus chance per level difference.");
 
     page.addDivider("BroRate");
     page.addTitle("ApplyToBroRate", "Apply To Bro Rate");
 
     local settingApplyToBroRate = page.addRangeSetting("ApplyToBroRate", 5, 0, 100, 1.0, "Apply to Bro Rate", "Amount to apply the same effect to other Bros");
+    local settingApplyToBroRatePerLevelDifference = page.addRangeSetting("ApplyToBroRatePerLevelDifference", 5, 0, 100, 1.0, "Apply to Bro Rate Per Level Difference", "Extra amount per level difference");
 
     page.addDivider("Debug");
     page.addTitle("DebugSettings", "Debug Settings");
@@ -158,12 +180,15 @@
 
     ::ScalingAvatar.Settings.StatRollPercent <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercent"),
     ::ScalingAvatar.Settings.StatRollPercentPerStar <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercentPerStar"),
+    ::ScalingAvatar.Settings.StatRollPercentPerLevelDifference <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPercentPerLevelDifference"),
     ::ScalingAvatar.Settings.StatRollModifier <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifier"),
     ::ScalingAvatar.Settings.StatRollModifierPerStar <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifierPerStar"),
+    ::ScalingAvatar.Settings.StatRollModifierPerLevelDifference <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollModifierPerLevelDifference"),
     ::ScalingAvatar.Settings.StatRollPerStatRolls <- ::ScalingAvatar.Mod.ModSettings.getSetting("StatRollPerStatRolls"),
     ::ScalingAvatar.Settings.PerkRollPercent <- ::ScalingAvatar.Mod.ModSettings.getSetting("PerkRollPercent"),
     ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference <- ::ScalingAvatar.Mod.ModSettings.getSetting("PerkRollPercentPerLevelDifference"),
     ::ScalingAvatar.Settings.ApplyToBroRate <- ::ScalingAvatar.Mod.ModSettings.getSetting("ApplyToBroRate"),
+    ::ScalingAvatar.Settings.ApplyToBroRatePerLevelDifference <- ::ScalingAvatar.Mod.ModSettings.getSetting("ApplyToBroRatePerLevelDifference"),
 
     ::ScalingAvatar.Mod.Debug.printLog("initalized msu with settings:", "debug");
     foreach (k,v in ::ScalingAvatar.Settings)
