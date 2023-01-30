@@ -84,7 +84,7 @@
 
     CalculateLevelDifference = function(bro, actor) {
         local powerBro = bro.getLevel();
-        local powerActor = actor.getXPValue() / 50;
+        local powerActor = actor.getXPValue() / 30;
 
         local delta = powerActor - powerBro;
 
