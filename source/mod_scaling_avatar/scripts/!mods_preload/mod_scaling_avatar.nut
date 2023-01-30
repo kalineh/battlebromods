@@ -85,7 +85,10 @@
     CalculateLevelDifference = function(bro, actor) {
         local powerBro = bro.getLevel();
         local powerActor = actor.getXPValue() / 50;
+
         local delta = powerActor - powerBro;
+
+        ::ScalingAvatar.VerboseLogDebug("ScalingAvatar: power " + powerBro + " vs " + powerActor + " (" + delta + ")");
 
         if (delta < 0)
             return 0;

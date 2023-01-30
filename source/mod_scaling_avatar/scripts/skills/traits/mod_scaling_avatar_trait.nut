@@ -122,8 +122,6 @@ this.mod_scaling_avatar_trait <- this.inherit("scripts/skills/traits/character_t
 
         local levelDifference = ::ScalingAvatar.CalculateLevelDifference(actor, _targetEntity)
 
-        ::ScalingAvatar.VerboseLogDebug("LEVEL DIFFERENCE: " + levelDifference);
-
         local learned_something = false;
         local learned_string = "";
 

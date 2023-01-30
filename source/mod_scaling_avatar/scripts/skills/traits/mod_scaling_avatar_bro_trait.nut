@@ -74,7 +74,7 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
 
         ::ScalingAvatar.VerboseLogDebug("rolled bro bonus " + bro_roll + " vs " + rollChance + "%");
 
-        if (bro_roll > rollChance)
+        if (bro_roll <= rollChance)
         {
             scalingAvatarOnTargetKilledStats(_targetEntity, _skill);
             scalingAvatarOnTargetKilledPerks(_targetEntity, _skill);
@@ -88,8 +88,6 @@ this.mod_scaling_avatar_bro_trait <- this.inherit("scripts/skills/traits/charact
         local targetProps = _targetEntity.getBaseProperties();
 
         local levelDifference = ::ScalingAvatar.CalculateLevelDifference(actor, _targetEntity)
-
-        ::ScalingAvatar.VerboseLogDebug("LEVEL DIFFERENCE: " + levelDifference);
 
         local learned_something = false;
         local learned_string = "";
