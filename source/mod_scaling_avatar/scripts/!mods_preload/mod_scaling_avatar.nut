@@ -151,6 +151,19 @@
         ::ScalingAvatar.Settings.ApplyToBroRate.set(0);
         ::ScalingAvatar.Settings.ApplyToBroRatePerLevelDifference.set(0);
     });
+    page.addButtonSetting("PresetRare", "Rare", "Rare", "Only very rarely get a perk or stat bonus.").addCallback(function() {
+        ::ScalingAvatar.VerboseLogDebug("setting preset beggar...");
+        ::ScalingAvatar.Settings.StatRollPercent.set(1);
+        ::ScalingAvatar.Settings.StatRollPercentPerStar.set(1);
+        ::ScalingAvatar.Settings.StatRollPercentPerLevelDifference.set(1);
+        ::ScalingAvatar.Settings.StatRollModifier.set(-5);
+        ::ScalingAvatar.Settings.StatRollModifierPerStar.set(-5);
+        ::ScalingAvatar.Settings.StatRollModifierPerLevelDifference.set(-5);
+        ::ScalingAvatar.Settings.PerkRollPercent.set(1);
+        ::ScalingAvatar.Settings.PerkRollPercentPerLevelDifference.set(1);
+        ::ScalingAvatar.Settings.ApplyToBroRate.set(1);
+        ::ScalingAvatar.Settings.ApplyToBroRatePerLevelDifference.set(1);
+    });
 
     page.addDivider("Stats");
     page.addTitle("Stats", "Stats");
