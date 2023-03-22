@@ -54,8 +54,8 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		talents.resize(this.Const.Attributes.COUNT, 0);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Hitpoints] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Fatigue] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedSkill] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedDefense] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Initiative] = this.Math.rand(0, 3);
@@ -72,10 +72,10 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		this.World.Assets.m.BusinessReputation = 10;
 		this.World.Assets.getStash().resize(this.World.Assets.getStash().getCapacity() - 9);
 		this.World.Assets.getStash().add(this.new("scripts/items/supplies/smoked_ham_item"));
-		this.World.Assets.m.Money = this.World.Assets.m.Money / 2 - (this.World.Assets.getEconomicDifficulty() == 0 ? 0 : 100);
-		this.World.Assets.m.ArmorParts = this.World.Assets.m.ArmorParts / 2;
-		this.World.Assets.m.Medicine = this.World.Assets.m.Medicine / 3;
-		this.World.Assets.m.Ammo = this.World.Assets.m.Ammo / 3;
+		//this.World.Assets.m.Money = this.World.Assets.m.Money / 2 - (this.World.Assets.getEconomicDifficulty() == 0 ? 0 : 100);
+		//this.World.Assets.m.ArmorParts = this.World.Assets.m.ArmorParts / 2;
+		//this.World.Assets.m.Medicine = this.World.Assets.m.Medicine / 3;
+		//this.World.Assets.m.Ammo = this.World.Assets.m.Ammo / 3;
 	}
 
 	function onSpawnPlayer()
