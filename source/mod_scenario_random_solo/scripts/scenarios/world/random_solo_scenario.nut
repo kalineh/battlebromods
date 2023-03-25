@@ -54,12 +54,22 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		talents.resize(this.Const.Attributes.COUNT, 0);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Hitpoints] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Fatigue] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedSkill] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedDefense] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Initiative] = this.Math.rand(0, 3);
 		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Bravery] = this.Math.rand(0, 3);
+
+		bro.getBaseProperties().Hitpoints += this.Math.rand(0, talents[this.Const.Attributes.Hitpoints] * 2);
+		bro.getBaseProperties().Stamina += this.Math.rand(0, talents[this.Const.Attributes.Fatigue] * 2);
+		bro.getBaseProperties().MeleeSkill += this.Math.rand(0, talents[this.Const.Attributes.MeleeSkill] * 2);
+		bro.getBaseProperties().MeleeDefense += this.Math.rand(0, talents[this.Const.Attributes.MeleeDefense] * 1);
+		bro.getBaseProperties().RangedSkill += this.Math.rand(0, talents[this.Const.Attributes.RangedSkill] * 2);
+		bro.getBaseProperties().RangedDefense += this.Math.rand(0, talents[this.Const.Attributes.RangedDefense] * 1);
+		bro.getBaseProperties().Initiative += this.Math.rand(0, talents[this.Const.Attributes.Initiative] * 2);
+		bro.getBaseProperties().Bravery += this.Math.rand(0, talents[this.Const.Attributes.Bravery] * 1);
+
 		bro.fillAttributeLevelUpValues(this.Const.XP.MaxLevelWithPerkpoints - 1);
 		local items = bro.getItems();
 		items.unequip(items.getItemAtSlot(this.Const.ItemSlot.Body));
@@ -72,6 +82,7 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		this.World.Assets.m.BusinessReputation = 10;
 		this.World.Assets.getStash().resize(this.World.Assets.getStash().getCapacity() - 9);
 		this.World.Assets.getStash().add(this.new("scripts/items/supplies/smoked_ham_item"));
+		this.World.Assets.m.Money = this.World.Assets.m.Money * 2 - (this.World.Assets.getEconomicDifficulty() * 200); // actually translates to 1000 per difficulty for some reason
 		//this.World.Assets.m.Money = this.World.Assets.m.Money / 2 - (this.World.Assets.getEconomicDifficulty() == 0 ? 0 : 100);
 		//this.World.Assets.m.ArmorParts = this.World.Assets.m.ArmorParts / 2;
 		//this.World.Assets.m.Medicine = this.World.Assets.m.Medicine / 3;
