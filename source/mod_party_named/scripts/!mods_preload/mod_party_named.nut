@@ -9,7 +9,9 @@
 {
     ::ModPartyNamed.Mod <- ::MSU.Class.Mod(::ModPartyNamed.ID, ::ModPartyNamed.Version, ::ModPartyNamed.Name);
 
-	::mods_hookNewObject("entity/world/party", function(o)
+    this.logDebug("ModPartyNamed: registered mod, hooking new object...");
+
+	::mods_hookExactClass("entity/world/party", function(o)
 	{
 		local onDropLootForPlayer = o.onDropLootForPlayer;
 		o.onDropLootForPlayer = function(_loottable)
