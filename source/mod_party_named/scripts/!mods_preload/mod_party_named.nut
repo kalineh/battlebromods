@@ -19,7 +19,7 @@
 			buffer = 1; // testing
 			local roll = this.Math.rand(0, buffer);
 
-		    ::logInfo("ModPartyNamed: rolled " + roll + " against " + buffer);
+		    this.logDebug("ModPartyNamed: rolled " + roll + " against " + buffer);
 
 			//if (roll < defeated)
 			//{
@@ -35,7 +35,7 @@
 
 		    	local choice = items[this.Math.rand(0, items.len() - 1)];
 
-			    ::logInfo("ModPartyNamed: rolled choice: " + choice);
+			    this.logDebug("ModPartyNamed: rolled choice: " + choice);
 
 				_loottable.push(this.new("scripts/items/" + choice));
 			//}

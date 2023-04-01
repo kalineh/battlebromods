@@ -16,7 +16,7 @@
 		local onSpawned = o.onSpawned;
 		o.onSpawned = function()
 		{
-		    ::logInfo("ModContractNamedFix: location.onSpawned");
+		    this.logDebug("ModContractNamedFix: location.onSpawned");
 
 		    onSpawned();
 
@@ -31,11 +31,11 @@
 
 		   	foreach (item in this.m.Loot.items)
 		   	{
-			    ::logInfo("ModContractNamedFix: > item " + item.getName());
+			    this.logDebug("ModContractNamedFix: > item " + item.getName());
 
 			    if (item.isItemType(this.Const.Items.ItemType.Named) || item.isItemType(this.Const.Items.ItemType.Legendary))
 			    {
-				    ::logInfo("ModContractNamedFix: > found named item " + item.getName());
+				    this.logDebug("ModContractNamedFix: > found named item " + item.getName());
 				    this.m.cached_named_items.add(item);
 			    }
 			}
@@ -48,7 +48,7 @@
 
 			foreach (item in this.m.cached_named_items)
 			{
-			    ::logInfo("ModContractNamedFix: adding named item back into table: " + item.getName());
+			    this.logDebug("ModContractNamedFix: adding named item back into table: " + item.getName());
 			   	_lootTable.push(item); 
 			}
 		}
