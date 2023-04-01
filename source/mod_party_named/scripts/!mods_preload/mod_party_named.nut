@@ -16,31 +16,47 @@
 		local onDropLootForPlayer = o.onDropLootForPlayer;
 		o.onDropLootForPlayer = function(_loottable)
 		{
+			// TODO: MSU settings
+
 			local defeated = this.World.Statistics.getFlags().getAsInt("LastEnemiesDefeatedCount");
-			local buffer = 182; // TODO: MSU setting
-			buffer = 1; // testing
-			local roll = this.Math.rand(0, buffer);
+			local chance = 1 + (defeated / 4);
+			local roll = this.Math.rand(0, 100);
 
-		    this.logDebug("ModPartyNamed: rolled " + roll + " against " + buffer);
+		    this.logDebug("ModPartyNamed: roll " + roll + " vs chance " + chance + "%");
 
-			//if (roll < defeated)
-			//{
-				local items = clone ::Const.Items.NamedWeapons;
-				items.extend(clone ::Const.Items.NamedShields);
-                items.extend(clone ::Const.Items.LegendNamedArmorLayers);
-				items.extend(clone ::Const.Items.LegendNamedHelmetLayers);
+			if (roll < chance)
+			{
+				local weapons = clone this.Const.Items.NamedWeapons;
+				local shields = clone this.Const.Items.NamedShields;
+				local helmets = clone this.Const.Items.NamedHelmets;
+				local armors = clone this.Const.Items.NamedArmors;
+				local rollType = this.Math.rand(0, 100);
 
-				foreach (item in ::IO.enumerateFiles("scripts/items/misc")) 
-				{
-					items.push("misc/" + split(item, "/").pop());
-				}
+				local result = "";
 
-		    	local choice = items[this.Math.rand(0, items.len() - 1)];
+				// 15% shields, 25% helmets, 25% armors, 35% weapons
 
-			    this.logDebug("ModPartyNamed: rolled choice: " + choice);
+				if (rollType <= 15)
+					result = shields[this.Math.rand(0, shields.len() - 1)];
+				else if (rollType <= 40)
+					result = helmets[this.Math.rand(0, helmets.len() - 1)];
+				else if (rollType <= 55)
+					result = armors[this.Math.rand(0, armors.len() - 1)];
+				else
+					result = weapons[this.Math.rand(0, weapons.len() - 1)];
 
-				_loottable.push(this.new("scripts/items/" + choice));
-			//}
+			    this.logDebug("ModPartyNamed: > chose " + result);
+
+				// NOTE: why did original mod do this?
+				//foreach (item in ::IO.enumerateFiles("scripts/items/misc")) 
+				//{
+				//	items.push("misc/" + split(item, "/").pop());
+				//}
+
+
+			    if (result != "")
+					_loottable.push(this.new("scripts/items/" + result));
+			}
 
 			onDropLootForPlayer(_loottable);
 		}
