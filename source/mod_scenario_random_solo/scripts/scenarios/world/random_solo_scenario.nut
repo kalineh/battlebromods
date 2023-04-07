@@ -15,6 +15,29 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		return true;
 	}
 
+	function addRandomTrait( _bro )
+	{
+		for ( local i = 0; i < 10; i = ++i )
+		{
+			local trait = this.Const.CharacterTraits[this.Math.rand(0, this.Const.CharacterTraits.len() - 1)];
+			local traitId = trait[0];
+			local traitScript = trait[1];
+
+			//if (traitId == "trait.survivor") continue;
+			//if (traitId == "trait.greedy") continue;
+			//if (traitId == "trait.loyal") continue;
+			//if (traitId == "trait.disloyal") continue;
+
+			if (_bro.getSkills().hasSkill(traitId))
+			{
+				continue;
+			}
+
+			_bro.getSkills().add(this.new(traitScript));
+			break;
+		}
+	}
+
 	function onSpawnAssets()
 	{
 		local roster = this.World.getPlayerRoster();
@@ -28,6 +51,9 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.getBackground().m.RawDescription = "A lone wanderer, thrust into the world, ready to live or die.";
 		bro.getBackground().buildDescription(true);
 		bro.setTitle("the Lonely");
+
+		addRandomTrait(bro); // +1 trait
+
 		bro.getSkills().removeByID("trait.survivor");
 		bro.getSkills().removeByID("trait.greedy");
 		bro.getSkills().removeByID("trait.loyal");
@@ -37,9 +63,9 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.getFlags().set("IsPlayerCharacter", true);
 		bro.getSprite("miniboss").setBrush("bust_miniboss_lone_wolf");
 		bro.m.HireTime = this.Time.getVirtualTimeF();
-		bro.m.PerkPoints = 1;
-		bro.m.LevelUps = 1;
-		bro.m.Level = 2;
+		bro.m.PerkPoints = 1; // +1 free perk
+		bro.m.LevelUps = 0;
+		bro.m.Level = 1;
 		bro.getBaseProperties().Hitpoints += this.Math.rand(5, 15);
 		bro.getBaseProperties().Stamina += this.Math.rand(5, 15);
 		bro.getBaseProperties().MeleeSkill += this.Math.rand(3, 8)
@@ -52,14 +78,14 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.m.Attributes = [];
 		local talents = bro.getTalents();
 		talents.resize(this.Const.Attributes.COUNT, 0);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Hitpoints] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Fatigue] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedSkill] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedDefense] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Initiative] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Bravery] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Hitpoints] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Fatigue] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.RangedSkill] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.RangedDefense] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Initiative] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Bravery] = this.Math.rand(0, 3);
 
 		bro.getBaseProperties().Hitpoints += this.Math.rand(0, talents[this.Const.Attributes.Hitpoints] * 2);
 		bro.getBaseProperties().Stamina += this.Math.rand(0, talents[this.Const.Attributes.Fatigue] * 2);

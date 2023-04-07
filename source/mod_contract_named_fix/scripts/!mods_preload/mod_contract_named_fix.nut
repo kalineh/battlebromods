@@ -44,14 +44,21 @@
 		local onDropLootForPlayer = o.onDropLootForPlayer;
 		o.onDropLootForPlayer = function(_lootTable)
 		{
-			local cached_named_items_unique <- [];
+			// just in case old save
+			if ("cached_named_items" in this.m)
+			{
+				onDropLootForPlayer(_lootTable);
+				return;
+			}
+
+			local cached_named_items_unique = [];
 
 			// if it was not removed by a contract it will still be there
 			foreach (item in this.m.Loot.getItems())
 			{
 				local exists = false;
 
-				foreach (var item_cached in cached_named_items)
+				foreach (item_cached in this.m.cached_named_items)
 				{
 					if (item == item_cached)
 						exists = true;
