@@ -47,33 +47,35 @@
 			// just in case old save
 			if ("cached_named_items" in this.m)
 			{
-				onDropLootForPlayer(_lootTable);
-				return;
-			}
+				local cached_named_items_unique = [];
 
-			local cached_named_items_unique = [];
-
-			// if it was not removed by a contract it will still be there
-			foreach (item in this.m.Loot.getItems())
-			{
-				local exists = false;
-
-				foreach (item_cached in this.m.cached_named_items)
+				// if it was not removed by a contract it will still be there
+				foreach (item in this.m.Loot.getItems())
 				{
-					if (item == item_cached)
-						exists = true;
+					local exists = false;
+
+					foreach (item_cached in this.m.cached_named_items)
+					{
+						if (item == item_cached)
+							exists = true;
+					}
+
+					if (exists == false)
+						cached_named_items_unique.append(item);
 				}
 
-				if (exists == false)
-					cached_named_items_unique.append(item);
+				onDropLootForPlayer(_lootTable);
+
+				foreach (item in cached_named_items_unique)
+				{
+				    this.logDebug("ModContractNamedFix: adding named item back into table: " + item.getName());
+				   	_lootTable.push(item); 
+				}
 			}
-
-			onDropLootForPlayer(_lootTable);
-
-			foreach (item in cached_named_items_unique)
+			else
 			{
-			    this.logDebug("ModContractNamedFix: adding named item back into table: " + item.getName());
-			   	_lootTable.push(item); 
+				onDropLootForPlayer(_lootTable);
+				return;
 			}
 		}
 	})
