@@ -63,7 +63,7 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.getFlags().set("IsPlayerCharacter", true);
 		bro.getSprite("miniboss").setBrush("bust_miniboss_lone_wolf");
 		bro.m.HireTime = this.Time.getVirtualTimeF();
-		bro.m.PerkPoints = 1; // +1 free perk
+		bro.m.PerkPoints = 2; // +2 free perks
 		bro.m.LevelUps = 0;
 		bro.m.Level = 1;
 		bro.getBaseProperties().Hitpoints += this.Math.rand(5, 15);
