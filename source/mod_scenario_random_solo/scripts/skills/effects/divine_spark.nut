@@ -1,8 +1,8 @@
-this.mod_divine_spark <- ::inherit("scripts/skills/skill", {
+this.divine_spark <- ::inherit("scripts/skills/skill", {
 	m = {},
 	function create()
 	{
-		this.m.ID = "effects.mod_divine_spark";
+		this.m.ID = "effects.divine_spark";
 		this.m.Name = "Divine Spark";
 		this.m.Description = "This character has a divine spark, the makings of a true hero."
 		this.m.Icon = "skills/status_effect_05.png";
