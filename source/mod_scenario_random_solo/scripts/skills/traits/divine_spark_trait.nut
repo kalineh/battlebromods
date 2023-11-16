@@ -11,7 +11,7 @@ this.divine_spark_trait <- ::inherit("scripts/skills/traits/character_trait", {
 		];
 		this.m.Excluded = [
 		];
-	}
+	},
 
 	function getTooltip()
 	{
@@ -24,13 +24,13 @@ this.divine_spark_trait <- ::inherit("scripts/skills/traits/character_trait", {
 				id = 10,
 				type = "text",
 				icon = "ui/icons/health.png",
-				text = "[color=" + ::Const.UI.Color.PositiveValue + "]-" + skillMalus + "[/color] Hitpoints"
+				text = "[color=" + ::Const.UI.Color.PositiveValue + "]+" + skillBonus + "[/color] Hitpoints"
 			},
 			{
 				id = 10,
 				type = "text",
 				icon = "ui/icons/fatigue.png",
-				text = "[color=" + ::Const.UI.Color.PositiveValue + "]-" + skillMalus + "[/color] Fatigue"
+				text = "[color=" + ::Const.UI.Color.PositiveValue + "]+" + skillBonus + "[/color] Fatigue"
 			},
 			{
 				id = 10,
@@ -66,17 +66,16 @@ this.divine_spark_trait <- ::inherit("scripts/skills/traits/character_trait", {
 				id = 10,
 				type = "text",
 				icon = "ui/icons/initiative.png",
-				text = "[color=" + ::Const.UI.Color.PositiveValue + "]-" + skillBonus + "[/color] Initiative"
+				text = "[color=" + ::Const.UI.Color.PositiveValue + "]+" + skillBonus + "[/color] Initiative"
 			}
 		]);
 
 		return tooltip;
-	}
-
+	},
 
 	function getSkillBonus()
 	{
-		local level = return this.getContainer().getActor().getLevel();
+		local level = this.getContainer().getActor().getLevel();
 		local bonus = level * 1;
 
 		if (level >= 3) bonus += 1;
@@ -84,28 +83,21 @@ this.divine_spark_trait <- ::inherit("scripts/skills/traits/character_trait", {
 		if (level >= 11) bonus += 3;
 
 		return bonus;
-	}
+	},
 
 	function onUpdate( _properties )
 	{
 		local actor = this.getContainer().getActor();
-		if (this.isEnabled())
-		{
-			local skillBonus = this.getSkillBonus();
-			_properties.Hitpoints += skillBonus;
-			_properties.Stamina += skillBonus;
-			_properties.MeleeSkill += skillBonus;
-			_properties.MeleeDefense += skillBonus;
-			_properties.RangedSkill += skillBonus;
-			_properties.RangedDefense += skillBonus;
-			_properties.Bravery += skillBonus;
-			_properties.Initiative += skillBonus;
-			_properties.DamageDirectAdd += skillBonus * 0.01;			
-		}
+		local skillBonus = this.getSkillBonus();
 
-		local skillMalus = this.getSkillMalus();
-		_properties.Stamina -= skillMalus;
-		_properties.Initiative -= skillMalus;
-		_properties.Hitpoints -= skillMalus;
+		_properties.Hitpoints += skillBonus;
+		_properties.Stamina += skillBonus;
+		_properties.MeleeSkill += skillBonus;
+		_properties.MeleeDefense += skillBonus;
+		_properties.RangedSkill += skillBonus;
+		_properties.RangedDefense += skillBonus;
+		_properties.Bravery += skillBonus;
+		_properties.Initiative += skillBonus;
+
 	}
 });
