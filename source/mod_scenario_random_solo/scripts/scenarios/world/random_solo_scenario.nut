@@ -59,36 +59,36 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.getSkills().removeByID("trait.loyal");
 		bro.getSkills().removeByID("trait.disloyal");
 		bro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
-		
+
 		bro.getSkills().add(this.new("scripts/skills/effects/mod_divine_spark"));
 
 		bro.setPlaceInFormation(4);
 		bro.getFlags().set("IsPlayerCharacter", true);
 		bro.getSprite("miniboss").setBrush("bust_miniboss_lone_wolf");
 		bro.m.HireTime = this.Time.getVirtualTimeF();
-		bro.m.PerkPoints = 2; // +2 free perks
+		bro.m.PerkPoints = 3; // +3 free perks
 		bro.m.LevelUps = 0;
 		bro.m.Level = 1;
 		bro.getBaseProperties().Hitpoints += this.Math.rand(5, 15);
 		bro.getBaseProperties().Stamina += this.Math.rand(5, 15);
-		bro.getBaseProperties().MeleeSkill += this.Math.rand(3, 8)
-		bro.getBaseProperties().MeleeDefense += this.Math.rand(3, 8);
-		bro.getBaseProperties().RangedSkill += this.Math.rand(3, 8);
-		bro.getBaseProperties().RangedDefense += this.Math.rand(3, 8);
+		bro.getBaseProperties().MeleeSkill += this.Math.rand(4, 11)
+		bro.getBaseProperties().MeleeDefense += this.Math.rand(4, 11);
+		bro.getBaseProperties().RangedSkill += this.Math.rand(4, 11);
+		bro.getBaseProperties().RangedDefense += this.Math.rand(4, 11);
 		bro.getBaseProperties().Initiative += this.Math.rand(5, 15);
 		bro.getBaseProperties().Bravery += this.Math.rand(5, 15);
 		bro.m.Talents = [];
 		bro.m.Attributes = [];
 		local talents = bro.getTalents();
 		talents.resize(this.Const.Attributes.COUNT, 0);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Hitpoints] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Fatigue] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.RangedSkill] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.RangedDefense] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Initiative] = this.Math.rand(0, 3);
-		if (this.Math.rand(0, 100) < 60) talents[this.Const.Attributes.Bravery] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Hitpoints] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Fatigue] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeSkill] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.MeleeDefense] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedSkill] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.RangedDefense] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Initiative] = this.Math.rand(0, 3);
+		if (this.Math.rand(0, 100) < 50) talents[this.Const.Attributes.Bravery] = this.Math.rand(0, 3);
 
 		bro.getBaseProperties().Hitpoints += this.Math.rand(0, talents[this.Const.Attributes.Hitpoints] * 2);
 		bro.getBaseProperties().Stamina += this.Math.rand(0, talents[this.Const.Attributes.Fatigue] * 2);
