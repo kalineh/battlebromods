@@ -1,13 +1,16 @@
-this.divine_spark <- ::inherit("scripts/skills/skill", {
+this.divine_spark_trait <- ::inherit("scripts/skills/traits/character_trait", {
 	m = {},
 	function create()
 	{
-		this.m.ID = "effects.divine_spark";
+		this.character_trait.create();
+		this.m.ID = "trait.divine_spark";
 		this.m.Name = "Divine Spark";
 		this.m.Description = "This character has a divine spark, the makings of a true hero."
-		this.m.Icon = "skills/status_effect_05.png";
-		this.m.Type = ::Const.SkillType.StatusEffect;
-		this.m.IsActive = false;
+		this.m.Icon = "ui/traits/trait_icon_39.png";
+		this.m.Titles = [
+		];
+		this.m.Excluded = [
+		];
 	}
 
 	function getTooltip()

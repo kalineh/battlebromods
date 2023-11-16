@@ -59,8 +59,7 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.getSkills().removeByID("trait.loyal");
 		bro.getSkills().removeByID("trait.disloyal");
 		bro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
-
-		bro.getSkills().add(this.new("scripts/skills/effects/divine_spark"));
+		bro.getSkills().add(this.new("scripts/skills/traits/divine_spark_trait"));
 
 		bro.setPlaceInFormation(4);
 		bro.getFlags().set("IsPlayerCharacter", true);
