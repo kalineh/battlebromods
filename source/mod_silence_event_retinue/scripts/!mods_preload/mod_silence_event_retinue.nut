@@ -16,6 +16,7 @@
         local onUpdateScore = o.onUpdateScore;
         o.onUpdateScore = function()
         {
+            // could check money here too
             this.m.Score = 0;
         }
     })
