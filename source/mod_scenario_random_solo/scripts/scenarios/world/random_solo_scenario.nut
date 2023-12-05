@@ -177,7 +177,7 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 
 	function onInit()
 	{
-		this.World.Assets.m.BrothersMax = 12;
+		this.World.Assets.m.BrothersMax = 24;
 	}
 
 	function onCombatFinished()
@@ -195,5 +195,27 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		return false;
 	}
 
+	function onUpdateLevel( _bro )
+	{
+		local skills = _bro.getSkills();
+		local level = _bro.getLevel();
+
+		if (skills.hasSkill("trait.divine_spark"))
+		{
+			local bonus = 0;
+
+			if (level == 3) bonus = 1;
+			if (level == 7) bonus = 1;
+			if (level == 11) bonus = 2;
+
+			if (bonus > 0)
+				_bro.setPerkPoints(_bro.getPerkPoints() + bonus);
+		}
+	}
+
+	function onActorKilled( _actor, _killer, _combatID )
+	{
+		// if has highlander trait, take perk
+	}
 });
 
