@@ -16,15 +16,6 @@
             if (_startTile == null)
                 return null;
 
-            local directions = [
-                this.Const.Direction.N,
-                this.Const.Direction.S,
-                this.Const.Direction.NW,
-                this.Const.Direction.SW,
-                this.Const.Direction.NE,
-                this.Const.Direction.SE
-            ];
-        
             local tileCursor = _startTile;
             local tilesUnchecked = [];
             local tilesChecked = [];
@@ -38,16 +29,20 @@
                     if (tilesUnchecked.len() <= 0)
                         break;
 
-                    tileCursor = tilesUnchecked.pop();
+                    // pop first element so we breadth-first search
+                    tileCursor = tilesUnchecked[0];
+                    tilesUnchecked.remove(0);
                 }
 
-                foreach (direction in directions)
+                for (local direction = 0; direction < this.Const.Direction.COUNT; direction = ++direction)
                 {
                     if (tileCursor.hasNextTile(direction) == false)
                         continue;
 
                     local next = tileCursor.getNextTile(direction);
                     if (next == null)
+                        continue;
+                    if (next.IsBadTerrain)
                         continue;
 
                     local existsUnchecked = false;
@@ -75,23 +70,72 @@
                         tilesUnchecked.push(next);
                 }
 
-                tilesChecked.push(tileCursor);
+                local alreadyInserted = false;
+
+                foreach (t in tilesChecked)
+                {
+                    if (t == tileCursor)
+                    {
+                        alreadyInserted = true;
+                        break;
+                    }
+                }
+
+                if (alreadyInserted == false)
+                    tilesChecked.push(tileCursor);
+                
                 tileCursor = null;
             }
 
+            local tileDistanceCustom = function(a, b) {
+                local dx = b.Pos.X - a.Pos.X;
+                local dy = b.Pos.Y - a.Pos.Y;
+                return (dx * dx + dy * dy);
+            };
+
+            // wrong for some reason
+            /*
             tilesChecked.sort(function(a, b) {
-                local da = _startTile.getDistanceTo(a);
-                local db = _startTile.getDistanceTo(b);
-                if (da < db)
-                    return 1;
-                if (db > da)
+                // getDistanceTo() seems to have some degenerate result sometimes
+                //local da = _startTile.getDistanceTo(a);
+                //local db = _startTile.getDistanceTo(b);
+                local da = tileDistanceCustom(_startTile, a);
+                local db = tileDistanceCustom(_startTile, b);
+
+                if (db < da)
                     return -1;
+                if (da > db)
+                    return 1;
                 return 0;
             });
+            */
+
+            local bubbleSortTiles = function(tiles, startTile) {
+                local n = tiles.len();
+                for (local i = 0; i < n - 1; i++) {
+                    for (local j = 0; j < n - i - 1; j++) {
+                        if (tileDistanceCustom(startTile, tiles[j]) > tileDistanceCustom(startTile, tiles[j + 1])) {
+                            // Swap tiles[j] and tiles[j + 1]
+                            local temp = tiles[j];
+                            tiles[j] = tiles[j + 1];
+                            tiles[j + 1] = temp;
+                        }
+                    }
+                }
+            };
+
+            // Using the function
+            bubbleSortTiles(tilesChecked, _startTile);
+
+            for (local i = 0; i < tilesChecked.len(); i++) {
+                local candidate = tilesChecked[i];
+                this.logDebug("TILE: sort check " + candidate + ", distance " + _startTile.getDistanceTo(candidate) + ", " + candidate.Pos.X + ", " + candidate.Pos.Y);
+            }
 
             foreach (candidate in tilesChecked)
             {
-                this.logDebug("TILE: checking " + candidate + ", distance " + _startTile.getDistanceTo(candidate));
+                this.logDebug("TILE: checking " + candidate + ", distance " + _startTile.getDistanceTo(candidate) + ", " + candidate.Pos.X + ", " + candidate.Pos.Y);
+                //this.logDebug("TILE: check " + candidate + ", distance " + _startTile.getDistanceTo(candidate));
                 if (candidate.IsEmpty == false)
                     continue;
                 // note: is this even set anywhere?
