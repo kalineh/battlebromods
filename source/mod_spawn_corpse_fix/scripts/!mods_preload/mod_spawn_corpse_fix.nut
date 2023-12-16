@@ -12,7 +12,7 @@
     this.logDebug("ModSpawnCorpseFix: registered mod...");
 
     ::mods_hookExactClass("entity/tactical/actor", function(o) {
-        local findUnoccupiedTile = function(_tile)
+        local findUnoccupiedTile = function( _tile )
         {
             if (_tile == null)
                 return null;
