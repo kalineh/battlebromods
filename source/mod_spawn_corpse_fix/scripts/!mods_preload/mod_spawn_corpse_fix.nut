@@ -80,7 +80,10 @@
             {
                 if (candidate.IsEmpty == false)
                     continue;
+                // note: is this even set anywhere?
                 if (candidate.IsCorpseSpawned)
+                    continue;
+                if (candidate.Properties.get("Corpse") != null)
                     continue;
                 if (candidate.IsBadTerrain)
                     continue;
