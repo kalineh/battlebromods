@@ -42,6 +42,8 @@
 
                         if (currentTile == null)
                             continue;
+                        if (currentTile.isPlacedOnMap() == false)
+                            return null;
                         if (currentTile.IsCorpseSpawned)
                             continue;
 
