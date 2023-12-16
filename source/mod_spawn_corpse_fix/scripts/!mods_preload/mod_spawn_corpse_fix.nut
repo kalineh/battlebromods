@@ -12,11 +12,8 @@
     this.logDebug("ModSpawnCorpseFix: registered mod...");
 
     ::mods_hookExactClass("entity/tactical/actor", function(o) {
-        local findUnoccupiedTile = function( _tile )
-        {
-            if (_tile == null)
-                return null;
-            if (_tile.isPlacedOnMap() == false)
+        local findUnoccupiedTile = function( _startTile ) {
+            if (_startTile == null)
                 return null;
 
             local directions = [
@@ -27,51 +24,84 @@
                 this.Const.Direction.NE,
                 this.Const.Direction.SE
             ];
-            local currentTile = _tile;
-            local maxLayers = 4;
+        
+            local tileCursor = _startTile;
+            local tilesUnchecked = [];
+            local tilesChecked = [];
 
-            for (local layer = 1; layer < maxLayers; ++layer)
+            local maxIterations = 1024;
+
+            for (local i = 0; i < maxIterations; ++i)
             {
-                for (local side = 0; side < this.Const.Direction.COUNT; ++side)
+                if (tileCursor == null)
                 {
-                    local stepsToTake = side == 0 ? layer - 1 : layer;
+                    if (tilesUnchecked.Length <= 0)
+                        break;
 
-                    for (local steps = 0; steps < stepsToTake; ++steps)
-                    {
-                        currentTile = currentTile.getNextTile(side);
-
-                        if (currentTile == null)
-                            continue;
-                        if (currentTile.isPlacedOnMap() == false)
-                            return null;
-                        if (currenTile.IsBadTerrain)
-                            continue;
-                        if (currentTile.IsCorpseSpawned)
-                            continue;
-
-                        // maybe should do this, or +1/-1 check
-                        //if (currentTile.Level != this.GetTile().Level)
-                        //  continue;
-
-                        // probably should do this too, not sure how
-                        //if (currentTile.traversable == false)
-                        //  continue;
-
-                        return currentTile;
-                    }
+                    tileCursor = tilesUnchecked.pop();
                 }
+
+                foreach (direction in directions)
+                {
+                    local next = tileCursor.getNextTile(direction);
+                    if (next == null)
+                        continue;
+
+                    local existsUnchecked = false;
+                    local existsChecked = false;
+
+                    foreach (var t in tilesUnchecked)
+                    {
+                        if (t == next)
+                        {
+                            existsUnchecked = true;
+                            break;
+                        }
+                    }
+
+                    foreach (var t in tilesChecked)
+                    {
+                        if (t == next)
+                        {
+                            existsChecked = true;
+                            break;
+                        }
+                    }
+
+                    if (existsChecked == false && existsUnchecked == false)
+                        tilesUnchecked.push(next);
+                }
+
+                tilesChecked.push(tileCursor);
+                tileCursor = null;
+            }
+
+            foreach (var candidate in tilesChecked)
+            {
+                if (candidate.IsEmpty == false)
+                    continue;
+                if (candidate.IsCorpseSpawned)
+                    continue;
+                if (candidate.IsBadTerrain)
+                    continue;
+
+                // maybe should do this, or +1/-1 check
+                //if (candidate.Level > _startTile.Level)
+                //  continue;
+
+                return candidate;
             }
 
             return null;
-        }
+        };
 
         local baseFunction = ::mods_getMember(o, "findTileToSpawnCorpse");
         ::mods_override(o, "findTileToSpawnCorpse", function( _killer ) {
             local tile = baseFunction(_killer);
+            local test = findUnoccupiedTile(this.getTile());
             if (tile == null)
             {
-                local selfTile = this.getTile();
-                local fallback = findUnoccupiedTile(selfTile);
+                local fallback = findUnoccupiedTile(this.getTile());
                 if (fallback != null)
                     return fallback;
             }
