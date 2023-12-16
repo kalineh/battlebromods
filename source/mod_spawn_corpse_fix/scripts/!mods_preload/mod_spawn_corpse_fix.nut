@@ -78,7 +78,7 @@
 
             foreach (var candidate in tilesChecked)
             {
-                if (candidate.IsEmpty == false)
+                if (candidate.IsEmpty)
                     continue;
                 // note: is this even set anywhere?
                 if (candidate.IsCorpseSpawned)
