@@ -44,6 +44,8 @@
                             continue;
                         if (currentTile.isPlacedOnMap() == false)
                             return null;
+                        if (currenTile.IsBadTerrain)
+                            continue;
                         if (currentTile.IsCorpseSpawned)
                             continue;
 
