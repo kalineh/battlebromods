@@ -29,13 +29,13 @@
             local tilesUnchecked = [];
             local tilesChecked = [];
 
-            local maxIterations = 1024;
+            local maxIterations = 128;
 
-            for (local i = 0; i < maxIterations; ++i)
+            for (local i = 0; i < maxIterations; i = ++i)
             {
                 if (tileCursor == null)
                 {
-                    if (tilesUnchecked.Length <= 0)
+                    if (tilesUnchecked.len() <= 0)
                         break;
 
                     tileCursor = tilesUnchecked.pop();
@@ -43,6 +43,9 @@
 
                 foreach (direction in directions)
                 {
+                    if (tileCursor.hasNextTile(direction) == false)
+                        continue;
+
                     local next = tileCursor.getNextTile(direction);
                     if (next == null)
                         continue;
@@ -50,7 +53,7 @@
                     local existsUnchecked = false;
                     local existsChecked = false;
 
-                    foreach (var t in tilesUnchecked)
+                    foreach (t in tilesUnchecked)
                     {
                         if (t == next)
                         {
@@ -59,7 +62,7 @@
                         }
                     }
 
-                    foreach (var t in tilesChecked)
+                    foreach (t in tilesChecked)
                     {
                         if (t == next)
                         {
@@ -76,14 +79,25 @@
                 tileCursor = null;
             }
 
-            foreach (var candidate in tilesChecked)
+            tilesChecked.sort(function(a, b) {
+                local da = _startTile.getDistanceTo(a);
+                local db = _startTile.getDistanceTo(b);
+                if (da < db)
+                    return 1;
+                if (db > da)
+                    return -1;
+                return 0;
+            });
+
+            foreach (candidate in tilesChecked)
             {
-                if (candidate.IsEmpty)
+                this.logDebug("TILE: checking " + candidate + ", distance " + _startTile.getDistanceTo(candidate));
+                if (candidate.IsEmpty == false)
                     continue;
                 // note: is this even set anywhere?
                 if (candidate.IsCorpseSpawned)
                     continue;
-                if (candidate.Properties.get("Corpse") != null)
+                if (candidate.Properties.has("Corpse"))
                     continue;
                 if (candidate.IsBadTerrain)
                     continue;
@@ -92,6 +106,7 @@
                 //if (candidate.Level > _startTile.Level)
                 //  continue;
 
+                this.logDebug("TILE: VALID FOUND");
                 return candidate;
             }
 
@@ -102,11 +117,15 @@
         ::mods_override(o, "findTileToSpawnCorpse", function( _killer ) {
             local tile = baseFunction(_killer);
             local test = findUnoccupiedTile(this.getTile());
+            this.logDebug("ModSpawnCorpseFix: test: " + test);
             if (tile == null)
             {
                 local fallback = findUnoccupiedTile(this.getTile());
                 if (fallback != null)
+                {
+                    this.logDebug("TILE: USING FALLBACK");
                     return fallback;
+                }
             }
             return tile;
         });
