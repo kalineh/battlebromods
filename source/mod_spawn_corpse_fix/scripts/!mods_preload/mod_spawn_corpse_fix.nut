@@ -83,7 +83,7 @@
 
                 if (alreadyInserted == false)
                     tilesChecked.push(tileCursor);
-                
+
                 tileCursor = null;
             }
 
@@ -127,14 +127,14 @@
             // Using the function
             bubbleSortTiles(tilesChecked, _startTile);
 
-            for (local i = 0; i < tilesChecked.len(); i++) {
-                local candidate = tilesChecked[i];
-                this.logDebug("TILE: sort check " + candidate + ", distance " + _startTile.getDistanceTo(candidate) + ", " + candidate.Pos.X + ", " + candidate.Pos.Y);
-            }
+            //for (local i = 0; i < tilesChecked.len(); i++) {
+                //local candidate = tilesChecked[i];
+                //this.logDebug("TILE: sort check " + candidate + ", distance " + _startTile.getDistanceTo(candidate) + ", " + candidate.Pos.X + ", " + candidate.Pos.Y);
+            //}
 
             foreach (candidate in tilesChecked)
             {
-                this.logDebug("TILE: checking " + candidate + ", distance " + _startTile.getDistanceTo(candidate) + ", " + candidate.Pos.X + ", " + candidate.Pos.Y);
+                //this.logDebug("TILE: checking " + candidate + ", distance " + _startTile.getDistanceTo(candidate) + ", " + candidate.Pos.X + ", " + candidate.Pos.Y);
                 //this.logDebug("TILE: check " + candidate + ", distance " + _startTile.getDistanceTo(candidate));
                 if (candidate.IsEmpty == false)
                     continue;
@@ -150,7 +150,7 @@
                 //if (candidate.Level > _startTile.Level)
                 //  continue;
 
-                this.logDebug("TILE: VALID FOUND");
+                //this.logDebug("TILE: VALID FOUND");
                 return candidate;
             }
 
@@ -160,14 +160,13 @@
         local baseFunction = ::mods_getMember(o, "findTileToSpawnCorpse");
         ::mods_override(o, "findTileToSpawnCorpse", function( _killer ) {
             local tile = baseFunction(_killer);
-            local test = findUnoccupiedTile(this.getTile());
-            this.logDebug("ModSpawnCorpseFix: test: " + test);
+            //local test = findUnoccupiedTile(this.getTile());
             if (tile == null)
             {
                 local fallback = findUnoccupiedTile(this.getTile());
                 if (fallback != null)
                 {
-                    this.logDebug("TILE: USING FALLBACK");
+                    //this.logDebug("TILE: USING FALLBACK");
                     return fallback;
                 }
             }
