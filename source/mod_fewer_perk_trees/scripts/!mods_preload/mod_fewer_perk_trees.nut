@@ -1,15 +1,15 @@
-::ModLessPerkTrees <- {
-    ID = "mod_less_perk_trees",
-    Name = "Less Perk Trees",
+::ModFewerPerkTrees <- {
+    ID = "mod_fewer_perk_trees",
+    Name = "Fewer Perk Trees",
     Version = "0.0.1",
 }
 
-::mods_registerMod(::ModLessPerkTrees.ID, ::ModLessPerkTrees.Version, ::ModLessPerkTrees.Name);
-::mods_queue(::ModLessPerkTrees.ID, "mod_msu, >mod_reforged, >mod_dynamic_perk_trees", function()
+::mods_registerMod(::ModFewerPerkTrees.ID, ::ModFewerPerkTrees.Version, ::ModFewerPerkTrees.Name);
+::mods_queue(::ModFewerPerkTrees.ID, "mod_msu, >mod_reforged, >mod_dynamic_perk_trees", function()
 {
-    ::ModLessPerkTrees.Mod <- ::MSU.Class.Mod(::ModLessPerkTrees.ID, ::ModLessPerkTrees.Version, ::ModLessPerkTrees.Name);
+    ::ModFewerPerkTrees.Mod <- ::MSU.Class.Mod(::ModFewerPerkTrees.ID, ::ModFewerPerkTrees.Version, ::ModFewerPerkTrees.Name);
 
-    this.logDebug("ModLessPerkTrees: registered mod...");
+    this.logDebug("ModFewerPerkTrees: registered mod...");
 
     ::mods_hookExactClass("mods/mod_dynamic_perks/classes/perk_tree", function(o) {
         local baseFunction = ::mods_getMember(o, "addFromDynamicMap");
@@ -71,6 +71,11 @@
                 {
                     rangeLow -= 1;
                     rangeHigh -= 1;
+                }
+                if (min == 2)
+                {
+                    rangeLow = 1;
+                    rangeHigh = 2;
                 }
                 local actual = ::Math.rand(rangeLow, rangeHigh);
                 if (min <= 0)
