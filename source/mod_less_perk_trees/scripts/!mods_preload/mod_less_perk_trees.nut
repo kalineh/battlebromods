@@ -11,7 +11,7 @@
 
     this.logDebug("ModLessPerkTrees: registered mod...");
 
-    ::mods_hookExactClass("perk_tree", function(o) {
+    ::mods_hookExactClass("mods/mod_dynamic_perks/classes/perk_tree", function(o) {
         local baseFunction = ::mods_getMember(o, "addFromDynamicMap");
         ::mods_override(o, "addFromDynamicMap", function() {
 
@@ -67,6 +67,11 @@
                 // start custom code
                 local rangeLow = min - 2;
                 local rangeHigh = min - 1;
+                if (min >= 5)
+                {
+                    rangeLow -= 1;
+                    rangeHigh -= 1;
+                }
                 local actual = ::Math.rand(rangeLow, rangeHigh);
                 if (min <= 0)
                     actual = 0;
