@@ -59,13 +59,15 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		bro.getSkills().removeByID("trait.loyal");
 		bro.getSkills().removeByID("trait.disloyal");
 		bro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
-		bro.getSkills().add(this.new("scripts/skills/traits/divine_spark_trait"));
+		bro.getSkills().add(this.new("scripts/skills/traits/divine_spark_power_trait"));
+		bro.getSkills().add(this.new("scripts/skills/traits/divine_spark_wisdom_trait"));
+		bro.getSkills().add(this.new("scripts/skills/traits/divine_spark_ascended_trait"));
 
 		bro.setPlaceInFormation(4);
 		bro.getFlags().set("IsPlayerCharacter", true);
 		bro.getSprite("miniboss").setBrush("bust_miniboss_lone_wolf");
 		bro.m.HireTime = this.Time.getVirtualTimeF();
-		bro.m.PerkPoints = 3; // +3 free perks
+		bro.m.PerkPoints = 1;
 		bro.m.LevelUps = 0;
 		bro.m.Level = 1;
 		bro.getBaseProperties().Hitpoints += this.Math.rand(5, 15);
@@ -195,18 +197,16 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 		return false;
 	}
 
+	// TODO: how to put this in perk, not in scenario
 	function onUpdateLevel( _bro )
 	{
 		local skills = _bro.getSkills();
 		local level = _bro.getLevel();
 
-		if (skills.hasSkill("trait.divine_spark"))
+		if (skills.hasSkill("trait.divine_spark_wisdom"))
 		{
-			local bonus = 0;
-
-			if (level == 3) bonus = 1;
-			if (level == 7) bonus = 1;
-			if (level == 11) bonus = 2;
+			local divineSparkWisdom = skills.getSkill("trait.divine_spark_wisdom");
+			local bonus = divineSparkWisdom.getPerkBonusAtLevel(level);
 
 			if (bonus > 0)
 				_bro.setPerkPoints(_bro.getPerkPoints() + bonus);

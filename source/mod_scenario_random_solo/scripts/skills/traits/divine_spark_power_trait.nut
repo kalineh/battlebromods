@@ -1,11 +1,11 @@
-this.divine_spark_trait <- ::inherit("scripts/skills/traits/character_trait", {
+this.divine_spark_power_trait <- ::inherit("scripts/skills/traits/character_trait", {
 	m = {},
 	function create()
 	{
 		this.character_trait.create();
-		this.m.ID = "trait.divine_spark";
-		this.m.Name = "Divine Spark";
-		this.m.Description = "This character has a divine spark, the makings of a true hero."
+		this.m.ID = "trait.divine_spark_power";
+		this.m.Name = "Divine Spark (Power)";
+		this.m.Description = "This character is filled with growing power of the divine."
 		this.m.Icon = "ui/traits/trait_icon_39.png";
 		this.m.Titles = [
 		];
