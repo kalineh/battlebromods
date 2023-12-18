@@ -205,7 +205,7 @@ this.random_solo_scenario <- this.inherit("scripts/scenarios/world/starting_scen
 
 		if (skills.hasSkill("trait.divine_spark_wisdom"))
 		{
-			local divineSparkWisdom = skills.getSkill("trait.divine_spark_wisdom");
+			local divineSparkWisdom = skills.getSkillByID("trait.divine_spark_wisdom");
 			local bonus = divineSparkWisdom.getPerkBonusAtLevel(level);
 
 			if (bonus > 0)
