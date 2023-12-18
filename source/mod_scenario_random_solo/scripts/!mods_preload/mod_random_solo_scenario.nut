@@ -1,7 +1,7 @@
 ::ModRandomSolo <- {
     ID = "mod_random_solo",
     Name = "RandomSolo",
-    Version = "0.0.8",
+    Version = "0.0.9",
 }
 
 ::mods_registerMod(::ModRandomSolo.ID, ::ModRandomSolo.Version, ::ModRandomSolo.Name);
