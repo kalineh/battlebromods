@@ -1,7 +1,7 @@
 ::ModFewerPerkTrees <- {
     ID = "mod_fewer_perk_trees",
     Name = "Fewer Perk Trees",
-    Version = "0.0.1",
+    Version = "0.0.3",
 }
 
 ::mods_registerMod(::ModFewerPerkTrees.ID, ::ModFewerPerkTrees.Version, ::ModFewerPerkTrees.Name);
@@ -69,17 +69,42 @@
                 local rangeHigh = min - 1;
                 if (min >= 5)
                 {
-                    rangeLow -= 1;
-                    rangeHigh -= 1;
+                    rangeLow = 2;
+                    rangeHigh = 3;
                 }
-                if (min == 2)
+                else if (min >= 4)
+                {
+                    rangeLow = 2;
+                    rangeHigh = 3;
+                }
+                else if (min >= 3)
                 {
                     rangeLow = 1;
                     rangeHigh = 2;
                 }
+                else if (min >= 2)
+                {
+                    rangeLow = 1;
+                    rangeHigh = 2;
+                }
+                else
+                {
+                    rangeLow = 0;
+                    rangeHigh = 0;
+                }
                 local actual = ::Math.rand(rangeLow, rangeHigh);
+
+                // for min=1 or min=2 trees, give a bit extra chance to get some tree
+                if (rangeHigh > 0 && actual == 0)
+                {
+                	if (::Math.rand(0, 100) < 50)
+                		actual = 1;
+                }
+
+                // just in case its supposed to not have this tree at all
                 if (min <= 0)
                     actual = 0;
+
                 min = actual;
                 // end custom code
 
